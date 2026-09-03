@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>مكة للهواتف الذكية</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16283f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مكة للهواتف الذكية">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c2430; --paper:#f6f3ec; --paper-raised:#fffdf8;
+    --navy:#16283f; --navy-soft:#20395a; --brass:#b8934a; --brass-soft:#e7d4a6;
+    --line:#ddd3ba; --ok:#3f7d58; --ok-bg:#e7f1ea; --warn:#b3792e; --warn-bg:#faf0dd;
+    --bad:#a5453f; --bad-bg:#f7e7e5; --muted:#6d7789;
+    --shadow: 0 1px 2px rgba(28,36,48,.06), 0 6px 20px -8px rgba(28,36,48,.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:'Tajawal',sans-serif;min-height:100vh;}
+  h1,h2,h3,.brand,.tabbtn,.badge,button{font-family:'Cairo',sans-serif;}
+  .app{max-width:1220px;margin:0 auto;padding:18px 18px 60px;}
+
+  .topbar{
+    background:linear-gradient(160deg,var(--navy) 0%,var(--navy-soft) 100%);
+    border-radius:16px;padding:20px 24px;color:#f3ede0;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .topbar::after{content:"";position:absolute;inset:0;
+    background-image:repeating-linear-gradient(135deg, rgba(184,147,74,.08) 0 2px, transparent 2px 26px);
+    pointer-events:none;}
+  .brand{display:flex;align-items:center;gap:12px;position:relative;z-index:1;}
+  .brand-mark{width:42px;height:42px;border-radius:10px;background:var(--brass);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;flex:none;}
+  .brand-text h1{margin:0;font-size:20px;font-weight:800;}
+  .brand-text span{font-size:12.5px;color:var(--brass-soft);}
+  .headline-stats{display:flex;gap:22px;position:relative;z-index:1;flex-wrap:wrap;}
+  .hstat{text-align:center;}
+  .hstat b{display:block;font-size:18px;font-weight:800;}
+  .hstat small{color:var(--brass-soft);font-size:11.5px;}
+  .save-warning{
+    background:var(--warn-bg); color:var(--warn); border:1px solid #e6c98a;
+    border-radius:10px; padding:9px 14px; font-size:12.5px; font-weight:700;
+    margin-top:10px; text-align:center;
+  }
+
+  .tabs{display:flex;gap:8px;margin:20px 0 18px;flex-wrap:wrap;}
+  .tabbtn{border:1px solid var(--line);background:var(--paper-raised);color:var(--muted);
+    padding:9px 16px;border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s;}
+  .tabbtn:hover{border-color:var(--brass);color:var(--ink);}
+  .tabbtn.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+  .card{background:var(--paper-raised);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:18px;margin-bottom:16px;}
+  .card-head{display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+  .card-head h2{margin:0;font-size:16.5px;font-weight:800;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    font-family:'Tajawal',sans-serif;border:1px solid var(--line);background:#fff;border-radius:9px;
+    padding:9px 11px;font-size:14px;color:var(--ink);outline:none;}
+  input:focus,select:focus,textarea:focus{border-color:var(--brass);box-shadow:0 0 0 3px rgba(184,147,74,.18);}
+  label{font-size:12.5px;color:var(--muted);font-weight:700;display:block;margin-bottom:4px;}
+  .field{display:flex;flex-direction:column;min-width:130px;}
+  .field.grow{flex:1;}
+
+  button.btn{border:none;cursor:pointer;border-radius:9px;padding:9px 16px;font-size:14px;font-weight:700;transition:.15s;}
+  .btn-primary{background:var(--brass);color:var(--navy);}
+  .btn-primary:hover{background:#a67f3d;}
+  .btn-primary:disabled{opacity:.55;cursor:not-allowed;}
+  .btn-ghost{background:transparent;border:1px solid var(--line)!important;color:var(--ink);}
+  .btn-ghost:hover{border-color:var(--brass)!important;}
+  .btn-sm{padding:5px 10px;font-size:12.5px;border-radius:7px;}
+  .icon-btn{background:none;border:none;cursor:pointer;padding:5px;border-radius:7px;color:var(--muted);}
+  .icon-btn:hover{background:var(--paper);color:var(--ink);}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{text-align:right;color:var(--muted);font-weight:700;font-size:12px;padding:8px 10px;
+    border-bottom:2px solid var(--line);white-space:nowrap;}
+  tbody td{padding:10px 10px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap;}
+  tbody tr:hover{background:#fbf8f0;}
+  .num{font-variant-numeric:tabular-nums;font-weight:600;}
+  .debit{color:var(--bad);} .credit{color:var(--ok);} .muted{color:var(--muted);}
+  .name-cell{font-weight:700;white-space:normal;}
+  .table-wrap{overflow-x:auto;}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:700;}
+  .badge-ok{background:var(--ok-bg);color:var(--ok);}
+  .badge-warn{background:var(--warn-bg);color:var(--warn);}
+  .badge-bad{background:var(--bad-bg);color:var(--bad);}
+  .badge-muted{background:#ece7d9;color:var(--muted);}
+
+  .empty{text-align:center;padding:50px 20px;color:var(--muted);}
+  .empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px;}
+
+  .overlay{position:fixed;inset:0;background:rgba(22,29,40,.55);display:flex;align-items:center;
+    justify-content:center;z-index:50;padding:16px;}
+  .modal{background:var(--paper-raised);border-radius:16px;padding:22px;width:100%;max-width:560px;
+    max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.35);}
+  .modal h3{margin:0 0 16px;font-size:17px;font-weight:800;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:520px){.grid2{grid-template-columns:1fr;}}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;
+    padding:11px 20px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:var(--shadow);
+    z-index:80;opacity:0;transition:.25s;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+
+  .filter-chip{border:1px solid var(--line);background:#fff;color:var(--muted);padding:7px 14px;
+    border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;}
+  .filter-chip.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .filter-chip .cnt{opacity:.75;margin-inline-start:4px;}
+
+  .customer-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px;
+    background:#fff;position:relative;}
+  .customer-card::before{content:"";position:absolute;top:0;bottom:0;right:0;width:5px;border-radius:0 12px 12px 0;background:var(--brass);}
+  .customer-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+  .customer-name{font-weight:800;font-size:15px;}
+  .customer-phone{color:var(--muted);font-size:12.5px;}
+  .cstats{display:flex;gap:22px;margin-top:12px;flex-wrap:wrap;}
+  .cstat b{display:block;font-size:15px;} .cstat small{color:var(--muted);font-size:11px;}
+  .doubt-toggle{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none;}
+
+  .modrow-changed{background:#fbf3e2;}
+  .diff-row{font-size:12.5px;padding:2px 0;}
+  .diff-label{color:var(--muted);font-weight:700;}
+  .diff-old{color:var(--bad);}
+  .diff-new{color:var(--ok);font-weight:700;}
+  .app-loading{display:flex;align-items:center;justify-content:center;min-height:60vh;color:var(--muted);font-size:14px;}
+  .auth-wrap{min-height:80vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .auth-card{background:var(--paper-raised);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+    padding:32px 28px;width:100%;max-width:380px;}
+  .auth-card .brand-mark{width:52px;height:52px;border-radius:12px;background:var(--brass);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;}
+  .auth-card h1{font-size:19px;}
+  .auth-card input{width:100%;}
+  ::placeholder{color:#a9a290;}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="app" id="app"><div class="app-loading">جارِ التحميل…</div></div>
+<div id="toast" class="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  const STORAGE_KEY = "ledger-data";
+  const SEED_TAQSEET_2024 = [{"date": "2024-01-14T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 750, "credit": 0, "type": "شراء", "deviceType": "Redmi 13C (8/256)", "cost": 530, "profit": 220, "supplier": "Icellpex", "buyerPhone": "", "serial": "1"}, {"date": "2024-01-14T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 50, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "2"}, {"date": "2024-01-28T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 750, "credit": 0, "type": "شراء", "deviceType": "Redmi 13C (8/256)", "cost": 520, "profit": 230, "supplier": "Icellpex", "buyerPhone": "", "serial": "3"}, {"date": "2024-03-10T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "4"}, {"date": "2024-03-10T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 40, "credit": 0, "type": "شراء", "deviceType": "كفرات", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "5"}, {"date": "2024-04-04T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "6"}, {"date": "2024-05-15T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "7"}, {"date": "2025-12-15T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "8"}, {"date": "2026-08-24T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "رفلكت", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "9"}, {"date": "2024-01-17T00:00:00", "buyerName": "حازم بدر", "debit": 710, "credit": 0, "type": "شراء", "deviceType": "iphone SE 64", "cost": 500, "profit": 140, "supplier": "جيتسيل بلس", "buyerPhone": "", "serial": "10"}, {"date": "2024-01-17T00:00:00", "buyerName": "حازم بدر", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "11"}, {"date": "2024-04-15T00:00:00", "buyerName": "حازم بدر", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "12"}, {"date": "2024-02-15T00:00:00", "buyerName": "علي حسين من الجديرا", "debit": 850, "credit": 0, "type": "شراء", "deviceType": "Redmi 13c 8/256", "cost": 510, "profit": 340, "supplier": "Icellpex", "buyerPhone": "", "serial": "30"}, {"date": "2024-04-05T00:00:00", "buyerName": "علي حسين من الجديرا", "debit": 0, "credit": 250, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "31"}, {"date": "2024-05-18T00:00:00", "buyerName": "علي حسين من الجديرا", "debit": 0, "credit": 250, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "32"}, {"date": "2025-11-17T00:00:00", "buyerName": "علي حسين من الجديرا", "debit": 0, "credit": 50, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "33"}, {"date": "2025-12-15T00:00:00", "buyerName": "علي حسين من الجديرا", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "عن طريق بشرى في بيتونيا", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "34"}, {"date": "2026-04-21T00:00:00", "buyerName": "علي حسين من الجديرا", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "عن طريق بشرى في بيتونيا", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "35"}, {"date": "2024-03-05T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 2000, "credit": 0, "type": "شراء", "deviceType": "Poco X6 Pro 5G 512G", "cost": 1310, "profit": 690, "supplier": "Icellpex", "buyerPhone": "", "serial": "40"}, {"date": "2024-03-05T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 30, "credit": 0, "type": "توصيل", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "41"}, {"date": "2024-03-05T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "42"}, {"date": "2024-04-06T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "43"}, {"date": "2024-04-06T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 30, "credit": 0, "type": "توصيل", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "44"}, {"date": "2024-04-16T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 30, "credit": 0, "type": "توصيل", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "45"}, {"date": "2024-04-16T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 2000, "credit": 0, "type": "شراء", "deviceType": "Poco X6 Pro 5G 512G", "cost": 1305, "profit": 700, "supplier": "Icellpex", "buyerPhone": "", "serial": "46"}, {"date": "2024-04-16T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 600, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "47"}, {"date": "2024-06-14T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "48"}, {"date": "2024-06-30T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "49"}, {"date": "2024-06-30T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 4700, "credit": 0, "type": "شراء", "deviceType": "Galaxy S23 Ultra 256", "cost": 3150, "profit": 1550, "supplier": "Skytech", "buyerPhone": "", "serial": "50"}, {"date": "2024-06-30T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 700, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "51"}, {"date": "2024-06-30T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 800, "type": "بدل", "deviceType": "شراء Poco X6 Pro 512G", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "52"}, {"date": "2024-07-31T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 800, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "53"}, {"date": "2024-09-01T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 700, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "54"}, {"date": "2024-10-07T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 700, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "55"}, {"date": "2024-12-02T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "56"}, {"date": "2024-12-04T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 2500, "credit": 0, "type": "شراء", "deviceType": "Poco F6 Pro 512", "cost": 1800, "profit": 700, "supplier": "SeGe", "buyerPhone": "", "serial": "57"}, {"date": "2024-12-04T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 600, "type": "بدل", "deviceType": "Poco X6 Pro 512 used", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "58"}, {"date": "2025-02-19T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 1100, "type": "دفعة", "deviceType": "شيك", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "59"}, {"date": "2025-08-15T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "من خلال محمد أبو حسان ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "60"}, {"date": "2025-10-03T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "من خلال محمد أبو حسان ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "61"}, {"date": "2025-11-12T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "من خلال محمد أبو حسان ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "62"}, {"date": "2025-11-24T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 1680, "credit": 0, "type": "شراء", "deviceType": "iphone 12 pro max 128 A+ 87%", "cost": 1220, "profit": 460, "supplier": "", "buyerPhone": "", "serial": "63"}, {"date": "2025-11-24T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 250, "type": "دفعة", "deviceType": "شامل التوصيل 30", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "64"}, {"date": "2025-11-24T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 750, "type": "بدل", "deviceType": "Poco F6 Pro 512 used ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "65"}, {"date": "2025-11-30T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 1830, "credit": 0, "type": "شراء", "deviceType": "Iphone 13 pro 256 A++ 89%", "cost": 1450, "profit": 100, "supplier": "", "buyerPhone": "", "serial": "66"}, {"date": "2025-11-30T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 1450, "type": "بدل", "deviceType": "اس 23 الترا 256 جيجا مع كرتونة بحالة ممتازة", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "67"}, {"date": "2025-12-02T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 1700, "type": "ارجاع", "deviceType": "Iphone 13 pro 256 A++ 89%", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "68"}, {"date": "2025-12-02T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 950, "credit": 0, "type": "شراء", "deviceType": "Galaxy A56 usd 5G 8/128", "cost": 500, "profit": 450, "supplier": "", "buyerPhone": "", "serial": "69"}, {"date": "2026-01-24T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "دفعة باليد في بيرنبالا", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "70"}, {"date": "2026-01-24T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 30, "credit": 0, "type": "بدل", "deviceType": "توصيل", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "71"}, {"date": "2026-02-04T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 1300, "credit": 0, "type": "شراء", "deviceType": "Poco X7 pro 512", "cost": 1150, "profit": 150, "supplier": "", "buyerPhone": "", "serial": "72"}, {"date": "2026-02-04T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "نقدا في البيت", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "73"}, {"date": "2026-02-04T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "نقدا في البيت", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "74"}, {"date": "2026-02-04T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "بدل", "deviceType": "Galaxy A56 A+ 128", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "75"}, {"date": "2026-02-04T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 120, "credit": 0, "type": "شراء", "deviceType": "شواحن", "cost": 100, "profit": 20, "supplier": "", "buyerPhone": "", "serial": "76"}, {"date": "2026-02-04T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 60, "credit": 0, "type": "بدل", "deviceType": "توصيل مرتين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "77"}, {"date": "2026-03-28T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 4030, "credit": 0, "type": "شراء", "deviceType": "S25 Ultra 256 new", "cost": 3000, "profit": 1000, "supplier": "", "buyerPhone": "", "serial": "78"}, {"date": "2026-03-28T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "cash", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "79"}, {"date": "2026-03-28T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 400, "type": "بدل", "deviceType": "Asus ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "80"}, {"date": "2026-03-28T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 600, "type": "بدل", "deviceType": "Poco X7 pro 512 used", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "81"}, {"date": "2026-04-19T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "من خلال محمد أبو حسان ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "82"}, {"date": "2026-05-25T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "من خلال محمد أبو حسان ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "83"}, {"date": "2026-05-31T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 4530, "credit": 0, "type": "شراء", "deviceType": "S26 Ultra 256 new+ توصيل", "cost": 3150, "profit": 1350, "supplier": "", "buyerPhone": "", "serial": "84"}, {"date": "2026-05-31T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "85"}, {"date": "2026-05-31T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 700, "type": "بدل", "deviceType": "شراء ايفون 12 برو ماكس 128 جيجا بطارية 73 ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "86"}, {"date": "2026-06-20T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 700, "type": "دفعة", "deviceType": "نقدا في شارع الارسال", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "87"}, {"date": "2026-07-07T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 1030, "credit": 0, "type": "شراء", "deviceType": "AirPods Pro 3+ توصيل", "cost": 715, "profit": 285, "supplier": "", "buyerPhone": "", "serial": "88"}, {"date": "2026-07-07T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "نقدا في بيرنبالا", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "89"}, {"date": "2026-07-23T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 700, "type": "دفعة", "deviceType": "مع أسامة جردات", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "90"}, {"date": "2026-08-25T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 0, "credit": 1000, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "91"}, {"date": "2026-08-25T00:00:00", "buyerName": "محمد عزمي احمد مسامير", "debit": 30, "credit": 0, "type": "أخرى", "deviceType": "توصيل", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "92"}, {"date": "2024-03-01T00:00:00", "buyerName": "أحلام اختي", "debit": 200, "credit": 0, "type": "شراء", "deviceType": "Redmi 8 used", "cost": 200, "profit": 0, "supplier": "ابتسام", "buyerPhone": "", "serial": "93"}, {"date": "2024-05-13T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 4300, "credit": 0, "type": "شراء", "deviceType": "Galaxy S23 Ultra 256", "cost": 3350, "profit": 950, "supplier": "SeGe", "buyerPhone": "569259535", "serial": "122"}, {"date": "2024-05-13T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 1000, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "123"}, {"date": "2024-06-12T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "124"}, {"date": "2024-07-01T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "125"}, {"date": "2024-08-10T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "126"}, {"date": "2024-09-08T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "127"}, {"date": "2024-10-23T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "128"}, {"date": "2024-12-12T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "129"}, {"date": "2026-06-08T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 5000, "credit": 0, "type": "شراء", "deviceType": "Iphone 17 pro max 256", "cost": 3950, "profit": 1050, "supplier": "SeGe", "buyerPhone": "567577577", "serial": "130"}, {"date": "2026-06-08T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 1000, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "131"}, {"date": "2026-07-08T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 600, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "132"}, {"date": "2026-08-16T00:00:00", "buyerName": "تحرير حمدان صديقة ملك", "debit": 0, "credit": 600, "type": "دفعة", "deviceType": "تحويل الى بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "133"}, {"date": "2024-07-29T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 650, "credit": 0, "type": "شراء", "deviceType": "Redmi 13c 256", "cost": 470, "profit": 180, "supplier": "Icellpex", "buyerPhone": "", "serial": "145"}, {"date": "2024-07-29T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "146"}, {"date": "2024-08-07T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 150, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "147"}, {"date": "2024-09-09T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "148"}, {"date": "2024-08-01T00:00:00", "buyerName": "محمد طارق احمد زكارنه", "debit": 1600, "credit": 0, "type": "شراء", "deviceType": "Poco X6 Pro", "cost": 800, "profit": 800, "supplier": "من أبو عزمي", "buyerPhone": "", "serial": "149"}, {"date": "2024-08-01T00:00:00", "buyerName": "محمد طارق احمد زكارنه", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "150"}, {"date": "2024-08-01T00:00:00", "buyerName": "محمد طارق احمد زكارنه", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "مع ابتسام", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "151"}, {"date": "2024-09-13T00:00:00", "buyerName": "محمد طارق احمد زكارنه", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "152"}, {"date": "2024-10-10T00:00:00", "buyerName": "محمد طارق احمد زكارنه", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "153"}, {"date": "2024-11-22T00:00:00", "buyerName": "محمد طارق احمد زكارنه", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "154"}, {"date": "2024-08-12T00:00:00", "buyerName": "محمد محمود مغير", "debit": 4200, "credit": 0, "type": "شراء", "deviceType": "iphone 15 Cdata 128", "cost": 3000, "profit": 1200, "supplier": "الأمير", "buyerPhone": "", "serial": "155"}, {"date": "2024-08-12T00:00:00", "buyerName": "محمد محمود مغير", "debit": 0, "credit": 1000, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "156"}, {"date": "2025-12-15T00:00:00", "buyerName": "محمد محمود مغير", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "عند ابتهال", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "157"}, {"date": "2026-04-14T00:00:00", "buyerName": "محمد محمود مغير", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "عند ابتهال", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "158"}, {"date": "2026-05-13T00:00:00", "buyerName": "محمد محمود مغير", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "عند ابتهال", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "159"}, {"date": "2024-08-22T00:00:00", "buyerName": "خالي عرفات", "debit": 650, "credit": 0, "type": "شراء", "deviceType": "Galaxy A15 ", "cost": 550, "profit": -50, "supplier": "", "buyerPhone": "", "serial": "163"}, {"date": "2024-08-31T00:00:00", "buyerName": "خالي عرفات", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "حواله من غاده", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "164"}, {"date": "2024-09-16T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 650, "credit": 0, "type": "شراء", "deviceType": "Redmi 13c 256", "cost": 470, "profit": 0, "supplier": "Icellpex", "buyerPhone": "", "serial": "165"}, {"date": "2024-09-16T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "166"}, {"date": "2024-10-13T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "167"}, {"date": "2024-12-12T00:00:00", "buyerName": "محمد أبو رحمه من الهيئة", "debit": 0, "credit": 150, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "168"}, {"date": "2024-12-19T00:00:00", "buyerName": "فدوى طارق", "debit": 2600, "credit": 0, "type": "شراء", "deviceType": "iphone 12 new 128", "cost": 1850, "profit": 750, "supplier": "", "buyerPhone": "", "serial": "197"}, {"date": "2024-12-19T00:00:00", "buyerName": "فدوى طارق", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "198"}, {"date": "2025-02-10T00:00:00", "buyerName": "فدوى طارق", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "199"}, {"date": "2025-03-21T00:00:00", "buyerName": "فدوى طارق", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "200"}, {"date": "2025-06-05T00:00:00", "buyerName": "فدوى طارق", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "201"}, {"date": "2025-12-25T00:00:00", "buyerName": "فدوى طارق", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "202"}, {"date": "2026-03-26T00:00:00", "buyerName": "فدوى طارق", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "203"}, {"date": "2025-01-25T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 2500, "credit": 0, "type": "شراء", "deviceType": "iphone 13 pro max 256", "cost": 1900, "profit": 570, "supplier": "", "buyerPhone": "", "serial": "204"}, {"date": "2025-02-16T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 0, "credit": 710, "type": "دفعة", "deviceType": "200 دولار", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "205"}, {"date": "2025-04-16T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "206"}, {"date": "2025-06-01T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "207"}, {"date": "2025-10-13T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "208"}, {"date": "2025-11-11T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "209"}, {"date": "2025-11-30T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "210"}, {"date": "2025-12-02T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "211"}, {"date": "2025-01-01T00:00:00", "buyerName": "سناء احمد محمد الحوامده", "debit": 530, "credit": 0, "type": "دين", "deviceType": "ps53tnbc020402187510032100000", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "567960295", "serial": "216"}, {"date": "2025-09-17T00:00:00", "buyerName": "سناء احمد محمد الحوامده", "debit": 400, "credit": 0, "type": "دين", "deviceType": "قرضة", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "217"}, {"date": "2025-03-16T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 1500, "credit": 0, "type": "شراء", "deviceType": "iphone 12 pro 128", "cost": 1100, "profit": 400, "supplier": "محمد أبو عيد", "buyerPhone": "537709097", "serial": "246"}, {"date": "2025-03-16T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 0, "credit": 600, "type": "دفعة", "deviceType": "Galaxy S22", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "247"}, {"date": "2025-04-05T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 1600, "credit": 0, "type": "شراء", "deviceType": "iphone 13 used 128g 75%", "cost": 1200, "profit": 400, "supplier": "", "buyerPhone": "", "serial": "248"}, {"date": "2025-04-05T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 0, "credit": 400, "type": "بدل", "deviceType": "Redmi note 14", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "249"}, {"date": "2025-05-24T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "250"}, {"date": "2025-11-25T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 1700, "credit": 0, "type": "شراء", "deviceType": "iphone 13 A++ 128 battery 90%", "cost": 1100, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "251"}, {"date": "2025-12-02T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 0, "credit": 1700, "type": "بدل", "deviceType": "iphone 13 A++ 128 battery 90%", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "252"}, {"date": "2025-11-25T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 0, "credit": 500, "type": "بدل", "deviceType": "جلكسي A56 ممتاز A++ جيجا 128 ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "253"}, {"date": "2025-11-25T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "254"}, {"date": "2025-12-02T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 2200, "credit": 0, "type": "شراء", "deviceType": "Iphone 13 pro 256 A++ 89%", "cost": 1450, "profit": 750, "supplier": "", "buyerPhone": "", "serial": "255"}, {"date": "2025-12-02T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 0, "credit": 450, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "256"}, {"date": "2025-12-02T00:00:00", "buyerName": "مؤمن فريد محمد طه", "debit": 600, "credit": 0, "type": "فرقية", "deviceType": "فرقية ايفون 13", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "257"}, {"date": "2025-03-23T00:00:00", "buyerName": "ثائر قلالوة", "debit": 1750, "credit": 0, "type": "شراء", "deviceType": "Poco X7 Pro 512", "cost": 1250, "profit": 500, "supplier": "SeGe", "buyerPhone": "", "serial": "258"}, {"date": "2025-12-13T00:00:00", "buyerName": "ثائر قلالوة", "debit": 0, "credit": 250, "type": "دفعة", "deviceType": "دفعات شهرية 350*5 شهور تبدأ من شهر 4", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "259"}, {"date": "2026-02-02T00:00:00", "buyerName": "ثائر قلالوة", "debit": 0, "credit": 250, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "260"}, {"date": "2025-04-13T00:00:00", "buyerName": "ايناس اختي", "debit": 1620, "credit": 0, "type": "شراء", "deviceType": "Redmi note 14 + Galaxy A16", "cost": 1170, "profit": 430, "supplier": "icellpex", "buyerPhone": "", "serial": "264"}, {"date": "2025-04-17T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "265"}, {"date": "2025-05-20T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "266"}, {"date": "2025-06-16T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "267"}, {"date": "2025-06-22T00:00:00", "buyerName": "ايناس اختي", "debit": 800, "credit": 0, "type": "شراء", "deviceType": "Redmi note 14 ", "cost": 550, "profit": 250, "supplier": "", "buyerPhone": "", "serial": "268"}, {"date": "2025-08-01T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "269"}, {"date": "2025-08-31T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "270"}, {"date": "2025-10-05T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "271"}, {"date": "2025-10-31T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "272"}, {"date": "2025-11-21T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "273"}, {"date": "2025-05-26T00:00:00", "buyerName": "اسراء هشام مسعود جيطان", "debit": 2300, "credit": 0, "type": "شراء", "deviceType": "Galaxy A56 new 5G 12/256", "cost": 1380, "profit": 920, "supplier": "SeGe", "buyerPhone": "", "serial": "274"}, {"date": "2025-09-10T00:00:00", "buyerName": "اسراء هشام مسعود جيطان", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "275"}, {"date": "2025-11-13T00:00:00", "buyerName": "اسراء هشام مسعود جيطان", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "مع جابر", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "276"}, {"date": "2026-05-25T00:00:00", "buyerName": "اسراء هشام مسعود جيطان", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "مع جابر", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "277"}, {"date": "2026-07-23T00:00:00", "buyerName": "اسراء هشام مسعود جيطان", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "مع جابر", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "278"}, {"date": "2026-08-23T00:00:00", "buyerName": "اسراء هشام مسعود جيطان", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "مع جابر", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "279"}, {"date": "2025-08-07T00:00:00", "buyerName": "حنين الكتناني", "debit": 3800, "credit": 0, "type": "شراء", "deviceType": "iphone 16 no active 128 white ", "cost": 2800, "profit": 950, "supplier": "وضاح", "buyerPhone": "", "serial": "307"}, {"date": "2025-08-07T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "308"}, {"date": "2025-08-07T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "309"}, {"date": "2025-08-10T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "310"}, {"date": "2025-08-13T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "311"}, {"date": "2025-09-02T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "312"}, {"date": "2025-10-12T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "313"}, {"date": "2025-11-03T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "314"}, {"date": "2025-12-02T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "315"}, {"date": "2026-01-04T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "316"}, {"date": "2026-02-10T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "317"}, {"date": "2026-03-16T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "318"}, {"date": "2026-04-06T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "319"}, {"date": "2026-06-07T00:00:00", "buyerName": "حنين الكتناني", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "320"}, {"date": "2025-10-01T00:00:00", "buyerName": "ربيع كبها", "debit": 3700, "credit": 0, "type": "شراء", "deviceType": "iphone 16 new 128", "cost": 2700, "profit": 1000, "supplier": "SE GE", "buyerPhone": "", "serial": "338"}, {"date": "2025-10-01T00:00:00", "buyerName": "ربيع كبها", "debit": 4700, "credit": 0, "type": "شراء", "deviceType": "iphone 17 new 256 + Airpuds copy", "cost": 3560, "profit": 1140, "supplier": "Skyteck", "buyerPhone": "", "serial": "339"}, {"date": "2025-10-01T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 2400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "340"}, {"date": "2025-10-15T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "341"}, {"date": "2025-11-12T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "342"}, {"date": "2025-12-13T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "343"}, {"date": "2026-01-13T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "344"}, {"date": "2026-02-16T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "345"}, {"date": "2026-03-19T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "346"}, {"date": "2026-04-21T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "347"}, {"date": "2026-06-13T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "دفعة باليد عن طريق ام عمر غدير", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "348"}, {"date": "2026-06-26T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "349"}, {"date": "2026-08-23T00:00:00", "buyerName": "ربيع كبها", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "350"}, {"date": "2025-10-14T00:00:00", "buyerName": "شادي اعليان حسون", "debit": 3800, "credit": 0, "type": "شراء", "deviceType": "iphone 16 new 128", "cost": 2600, "profit": 1200, "supplier": "SE GE", "buyerPhone": "599152835", "serial": "358"}, {"date": "2025-10-14T00:00:00", "buyerName": "شادي اعليان حسون", "debit": 0, "credit": 950, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "359"}, {"date": "2025-11-13T00:00:00", "buyerName": "شادي اعليان حسون", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "360"}, {"date": "2026-01-14T00:00:00", "buyerName": "شادي اعليان حسون", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "361"}, {"date": "2026-04-20T00:00:00", "buyerName": "شادي اعليان حسون", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "باليد ", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "362"}, {"date": "2026-08-23T00:00:00", "buyerName": "شادي اعليان حسون", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "363"}, {"date": "2025-10-22T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 4520, "credit": 0, "type": "شراء", "deviceType": "iphone 17 new 256 ", "cost": 3420, "profit": 1100, "supplier": "Skyteck", "buyerPhone": "568650942", "serial": "364"}, {"date": "2025-10-22T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 600, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "365"}, {"date": "2025-11-05T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 3920, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "366"}, {"date": "2025-10-25T00:00:00", "buyerName": "علي حسين من الجديرا", "debit": 1050, "credit": 0, "type": "شراء", "deviceType": "Redmi Note 14 pro 256", "cost": 720, "profit": 330, "supplier": "SE GE", "buyerPhone": "", "serial": "367"}, {"date": "2026-04-21T00:00:00", "buyerName": "علي حسين من الجديرا", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "باليد مع بشرى", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "368"}, {"date": "2026-07-07T00:00:00", "buyerName": "علي حسين من الجديرا", "debit": 0, "credit": 150, "type": "دفعة", "deviceType": "باليد مع بشرى", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "369"}, {"date": "2025-11-06T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 7300, "credit": 0, "type": "شراء", "deviceType": "Iphone 17 pro max 256 cdata noactive", "cost": 5550, "profit": 1750, "supplier": "Skyteck", "buyerPhone": "568650942", "serial": "374"}, {"date": "2025-11-06T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 80, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "375"}, {"date": "2025-11-19T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 250, "type": "دفعة", "deviceType": "حوالة الى بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "376"}, {"date": "2025-11-29T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 250, "type": "دفعة", "deviceType": "عند اخو وضاح أبو حجلة", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "377"}, {"date": "2025-12-23T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "عند اخو وضاح أبو حجلة", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "378"}, {"date": "2026-04-21T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "عند اخو وضاح أبو حجلة", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "379"}, {"date": "2026-05-28T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 150, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "380"}, {"date": "2026-07-06T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 150, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "381"}, {"date": "2026-07-21T00:00:00", "buyerName": "يزن احمد يعقوب بني نمرة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "تحويل بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "382"}, {"date": "2023-01-01T00:00:00", "buyerName": "صالح أبو عرة", "debit": 500, "credit": 0, "type": "ض أملاك", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "392"}, {"date": "2025-11-09T00:00:00", "buyerName": "صالح أبو عرة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "393"}, {"date": "2025-12-15T00:00:00", "buyerName": "صالح أبو عرة", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "394"}, {"date": "2026-06-11T00:00:00", "buyerName": "صالح أبو عرة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "395"}, {"date": "2025-11-11T00:00:00", "buyerName": "ظافر فهمي عبد القادر صوص", "debit": 3400, "credit": 0, "type": "شراء", "deviceType": "iphone 16 no active 128 blue", "cost": 2400, "profit": 1000, "supplier": "", "buyerPhone": "569519554", "serial": "399"}, {"date": "2025-11-11T00:00:00", "buyerName": "ظافر فهمي عبد القادر صوص", "debit": 0, "credit": 1000, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "400"}, {"date": "2025-11-26T00:00:00", "buyerName": "ظافر فهمي عبد القادر صوص", "debit": 5500, "credit": 0, "type": "شراء", "deviceType": "16 Pro max 512 A++ 97%", "cost": 3650, "profit": 1850, "supplier": "", "buyerPhone": "", "serial": "401"}, {"date": "2025-11-26T00:00:00", "buyerName": "ظافر فهمي عبد القادر صوص", "debit": 0, "credit": 1500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "402"}, {"date": "2025-11-13T00:00:00", "buyerName": "جهاد جلال محمد جمعه", "debit": 6600, "credit": 0, "type": "شراء", "deviceType": "Iphone 17 pro max 256 cdata noactive esim", "cost": 4720, "profit": 1880, "supplier": "Skyteck", "buyerPhone": "504763338", "serial": "403"}, {"date": "2025-11-13T00:00:00", "buyerName": "جهاد جلال محمد جمعه", "debit": 169, "credit": 0, "type": "شراء", "deviceType": "سماعة ريدمي اصلية 140 + شاحن 17 + لصقة و بيت 12", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "404"}, {"date": "2025-11-13T00:00:00", "buyerName": "جهاد جلال محمد جمعه", "debit": 0, "credit": 2000, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "405"}, {"date": "2025-11-16T00:00:00", "buyerName": "جهاد جلال محمد جمعه", "debit": 0, "credit": 150, "type": "دفعة", "deviceType": "حوالة بنك فلسطين", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "406"}, {"date": "2025-11-17T00:00:00", "buyerName": "جهاد جلال محمد جمعه", "debit": 5400, "credit": 0, "type": "شراء", "deviceType": "Galaxy S25 Ultra 512 black", "cost": 3650, "profit": 1750, "supplier": "وجد للاتصالات", "buyerPhone": "", "serial": "407"}, {"date": "2025-11-17T00:00:00", "buyerName": "جهاد جلال محمد جمعه", "debit": 0, "credit": 1900, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "408"}, {"date": "2025-12-04T00:00:00", "buyerName": "جهاد جلال محمد جمعه", "debit": 1900, "credit": 0, "type": "شراء", "deviceType": "Galaxy S23 Ultra 256 used", "cost": 1450, "profit": 450, "supplier": "", "buyerPhone": "", "serial": "409"}, {"date": "2025-12-04T00:00:00", "buyerName": "جهاد جلال محمد جمعه", "debit": 0, "credit": 800, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "410"}, {"date": "2025-11-17T00:00:00", "buyerName": "خالد صوافطة", "debit": 2800, "credit": 0, "type": "شراء", "deviceType": "Iphone 13 pro max 256 A+ 91%", "cost": 1920, "profit": 880, "supplier": "أبو عيد", "buyerPhone": "", "serial": "417"}, {"date": "2025-11-17T00:00:00", "buyerName": "خالد صوافطة", "debit": 0, "credit": 700, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "418"}, {"date": "2026-02-01T00:00:00", "buyerName": "خالد صوافطة", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "419"}, {"date": "2026-03-22T00:00:00", "buyerName": "خالد صوافطة", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "420"}, {"date": "2026-06-06T00:00:00", "buyerName": "خالد صوافطة", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "مع أسماء", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "421"}, {"date": "2026-08-25T00:00:00", "buyerName": "خالد صوافطة", "debit": 0, "credit": 600, "type": "دفعة", "deviceType": "مع حسني", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": ""}, {"date": "2025-12-18T00:00:00", "buyerName": "اسلام راغب زكارنه", "debit": 450, "credit": 0, "type": "شراء", "deviceType": "Redmi A5 new 128G", "cost": 265, "profit": 185, "supplier": "", "buyerPhone": "", "serial": "432"}, {"date": "2025-12-25T00:00:00", "buyerName": "اسلام راغب زكارنه", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "433"}, {"date": "2026-01-21T00:00:00", "buyerName": "اسلام راغب زكارنه", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "مع أحلام", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "434"}, {"date": "2026-02-19T00:00:00", "buyerName": "اسلام راغب زكارنه", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "مع أحلام", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "435"}, {"date": "2026-01-06T00:00:00", "buyerName": "صالح أبو عرة", "debit": 1000, "credit": 0, "type": "شراء", "deviceType": "Redmi A5 new 128G*2", "cost": 540, "profit": 460, "supplier": "icellpex", "buyerPhone": "", "serial": "444"}, {"date": "2026-01-07T00:00:00", "buyerName": "صالح أبو عرة", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "445"}, {"date": "2026-02-13T00:00:00", "buyerName": "صالح أبو عرة", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "446"}, {"date": "2026-03-03T00:00:00", "buyerName": "صالح أبو عرة", "debit": 900, "credit": 0, "type": "شراء", "deviceType": "Redmi Note 15", "cost": 630, "profit": 270, "supplier": "", "buyerPhone": "", "serial": "447"}, {"date": "2026-03-24T00:00:00", "buyerName": "صالح أبو عرة", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "448"}, {"date": "2026-04-27T00:00:00", "buyerName": "صالح أبو عرة", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "449"}, {"date": "2026-07-23T00:00:00", "buyerName": "صالح أبو عرة", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "تحويل الى رفلكت", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "450"}, {"date": "2026-01-21T00:00:00", "buyerName": "محمد راجح البزور", "debit": 2880, "credit": 0, "type": "شراء", "deviceType": "اقتراض مبلغ 900 دولار", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "451"}, {"date": "2026-02-03T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 1300, "credit": 0, "type": "شراء", "deviceType": "Poco F6 Pro 512 used ", "cost": 750, "profit": 550, "supplier": "", "buyerPhone": "", "serial": "452"}, {"date": "2026-02-03T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 0, "credit": 0, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "453"}, {"date": "2026-02-12T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 1890, "credit": 0, "type": "قرضة", "deviceType": "قرضة 600 دولار", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "460"}, {"date": "2026-02-12T00:00:00", "buyerName": "اسامه مصطفى محمود الجردات", "debit": 0, "credit": 1000, "type": "دفعة", "deviceType": "بيد صفاء", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "461"}, {"date": "2026-03-01T00:00:00", "buyerName": "معتصم صدقة", "debit": 1050, "credit": 0, "type": "شراء", "deviceType": "Galaxy A36 new 128G", "cost": 815, "profit": 235, "supplier": "", "buyerPhone": "", "serial": "462"}, {"date": "2026-03-02T00:00:00", "buyerName": "معتصم صدقة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "463"}, {"date": "2026-04-02T00:00:00", "buyerName": "معتصم صدقة", "debit": 0, "credit": 150, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "464"}, {"date": "2026-05-05T00:00:00", "buyerName": "معتصم صدقة", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "465"}, {"date": "2026-06-08T00:00:00", "buyerName": "معتصم صدقة", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "466"}, {"date": "2026-07-07T00:00:00", "buyerName": "معتصم صدقة", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "467"}, {"date": "2026-08-03T00:00:00", "buyerName": "معتصم صدقة", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "468"}, {"date": "2026-03-11T00:00:00", "buyerName": "دلال حسين", "debit": 950, "credit": 0, "type": "شراء", "deviceType": "Redmi note 15 new 256", "cost": 640, "profit": 310, "supplier": "", "buyerPhone": "595638118", "serial": "469"}, {"date": "2026-03-11T00:00:00", "buyerName": "دلال حسين", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "470"}, {"date": "2026-04-06T00:00:00", "buyerName": "دلال حسين", "debit": 0, "credit": 300, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "471"}, {"date": "2026-05-05T00:00:00", "buyerName": "دلال حسين", "debit": 0, "credit": 350, "type": "دفعة", "deviceType": "Reflect", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "472"}, {"date": "2026-08-17T00:00:00", "buyerName": "دلال حسين", "debit": 1400, "credit": 0, "type": "شراء", "deviceType": "Redmi note 15 pro 512", "cost": 995, "profit": 405, "supplier": "icellpex", "buyerPhone": "", "serial": "473"}, {"date": "2026-08-18T00:00:00", "buyerName": "دلال حسين", "debit": 1400, "credit": 0, "type": "شراء", "deviceType": "Redmi note 15 pro 512", "cost": 995, "profit": 405, "supplier": "icellpex", "buyerPhone": "", "serial": "474"}, {"date": "2026-04-05T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 2900, "credit": 0, "type": "شراء", "deviceType": "Iphone 13 pro max 256 Active ", "cost": 2000, "profit": 900, "supplier": "", "buyerPhone": "598847258", "serial": "475"}, {"date": "2026-04-05T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "476"}, {"date": "2026-05-05T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "Reflect", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "477"}, {"date": "2026-06-05T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "البنك الإسلامي العربي", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "478"}, {"date": "2026-07-06T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "نقداً في البيت", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "479"}, {"date": "2026-07-06T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 950, "credit": 0, "type": "أخرى", "deviceType": "Apple Watch 7 used 45mm", "cost": 0, "profit": 700, "supplier": "", "buyerPhone": "", "serial": "480"}, {"date": "2026-07-06T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "نقداً في البيت", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "481"}, {"date": "2026-08-06T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 0, "credit": 500, "type": "أخرى", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "482"}, {"date": "2026-08-08T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 1920, "credit": 0, "type": "أخرى", "deviceType": "Galaxy A57 New 8/256", "cost": 1230, "profit": 690, "supplier": "", "buyerPhone": "", "serial": "483"}, {"date": "2026-08-07T00:00:00", "buyerName": "راني خالد طه ماضي", "debit": 0, "credit": 400, "type": "أخرى", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "484"}, {"date": "2026-04-05T00:00:00", "buyerName": "حازم بدر", "debit": 1500, "credit": 0, "type": "شراء", "deviceType": "Asus E1504 i3/8/256", "cost": 1150, "profit": 350, "supplier": "", "buyerPhone": "", "serial": "485"}, {"date": "2026-04-07T00:00:00", "buyerName": "حازم بدر", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "486"}, {"date": "2026-04-21T00:00:00", "buyerName": "حازم بدر", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "487"}, {"date": "2026-05-12T00:00:00", "buyerName": "حازم بدر", "debit": 0, "credit": 100, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "488"}, {"date": "2026-04-22T00:00:00", "buyerName": "محمود نمر", "debit": 3000, "credit": 0, "type": "شراء", "deviceType": "Iphone 13 pro max 256", "cost": 2000, "profit": 1000, "supplier": "", "buyerPhone": "", "serial": "491"}, {"date": "2026-04-22T00:00:00", "buyerName": "محمود نمر", "debit": 0, "credit": 1000, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "492"}, {"date": "2026-05-20T00:00:00", "buyerName": "محمود نمر", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "عند ابتهال", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "493"}, {"date": "2026-07-02T00:00:00", "buyerName": "محمود نمر", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "عند ابتهال", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "494"}, {"date": "2026-08-19T00:00:00", "buyerName": "محمود نمر", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "عند ابتهال", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "495"}, {"date": "2026-04-26T00:00:00", "buyerName": "وسام مصطفى محمود الجردات", "debit": 1550, "credit": 0, "type": "شراء", "deviceType": "Asus E1504 i3/8/256", "cost": 1150, "profit": 400, "supplier": "", "buyerPhone": "", "serial": "498"}, {"date": "2026-05-15T00:00:00", "buyerName": "وسام مصطفى محمود الجردات", "debit": 0, "credit": 250, "type": "دفعة", "deviceType": "دفعة باليد باب المسجد", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "499"}, {"date": "2026-06-04T00:00:00", "buyerName": "وسام مصطفى محمود الجردات", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "دفعة باليد باب المسجد", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "500"}, {"date": "2026-05-01T00:00:00", "buyerName": "حسام للتوصيل كادي", "debit": 700, "credit": 0, "type": "شراء", "deviceType": "Iphone 12 Pro C----", "cost": 1100, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "503"}, {"date": "2026-05-01T00:00:00", "buyerName": "حسام للتوصيل كادي", "debit": 0, "credit": 0, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "504"}, {"date": "2026-05-20T00:00:00", "buyerName": "جهاد أبو قبيطة", "debit": 850, "credit": 0, "type": "شراء", "deviceType": "Redmi note 15 new 256", "cost": 600, "profit": 250, "supplier": "SeGe", "buyerPhone": "", "serial": "505"}, {"date": "2026-07-06T00:00:00", "buyerName": "جهاد أبو قبيطة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "تم الاستلام في المكتب", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "506"}, {"date": "2026-08-13T00:00:00", "buyerName": "جهاد أبو قبيطة", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "تم الاستلام في المكتب", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "507"}, {"date": "2026-06-29T00:00:00", "buyerName": "ايناس اختي", "debit": 800, "credit": 0, "type": "شراء", "deviceType": "Redmi note 15 new 256", "cost": 590, "profit": 210, "supplier": "icellpex", "buyerPhone": "", "serial": "511"}, {"date": "2026-07-01T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "512"}, {"date": "2026-08-03T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "513"}, {"date": "2026-07-03T00:00:00", "buyerName": "ايناس اختي", "debit": 5200, "credit": 0, "type": "شراء", "deviceType": "iphone 17 pro max 256 esim new", "cost": 4030, "profit": 1170, "supplier": "Skyteck", "buyerPhone": "972567497977", "serial": "514"}, {"date": "2026-07-05T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "515"}, {"date": "2026-08-03T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 500, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "516"}, {"date": "2026-08-10T00:00:00", "buyerName": "ايناس اختي", "debit": 850, "credit": 0, "type": "شراء", "deviceType": "Galaxy A17 new 256 ", "cost": 630, "profit": 220, "supplier": "SeGe", "buyerPhone": "", "serial": "517"}, {"date": "2026-08-15T00:00:00", "buyerName": "ايناس اختي", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "مع امي", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "518"}, {"date": "2026-08-20T00:00:00", "buyerName": "دعاء نصر رفيق كميل", "debit": 1000, "credit": 0, "type": "شراء", "deviceType": "iphone 12 pro 256 used A- 76%", "cost": 750, "profit": 250, "supplier": "", "buyerPhone": "", "serial": "524"}, {"date": "2026-08-20T00:00:00", "buyerName": "دعاء نصر رفيق كميل", "debit": 0, "credit": 200, "type": "دفعة", "deviceType": "مع امي", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "525"}, {"date": "2026-08-19T00:00:00", "buyerName": "بنت اسامه جردات", "debit": 1900, "credit": 0, "type": "شراء", "deviceType": "iphone 15 A+ 128 %91", "cost": 1400, "profit": 490, "supplier": "", "buyerPhone": "", "serial": "526"}, {"date": "2026-08-19T00:00:00", "buyerName": "بنت اسامه جردات", "debit": 0, "credit": 400, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "527"}, {"date": "2026-08-23T00:00:00", "buyerName": "حسني البزور", "debit": 450, "credit": 0, "type": "شراء", "deviceType": "A15 B- 128G", "cost": 600, "profit": 100, "supplier": "", "buyerPhone": "", "serial": "528"}, {"date": "2026-08-23T00:00:00", "buyerName": "حسني البزور", "debit": 0, "credit": 0, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "529"}, {"date": "2026-08-24T00:00:00", "buyerName": "بكر صالح", "debit": 1800, "credit": 0, "type": "شراء", "deviceType": "Galaxy S25 Plus 256", "cost": 0, "profit": 270, "supplier": "", "buyerPhone": "", "serial": "530"}, {"date": "2026-08-24T00:00:00", "buyerName": "بكر صالح", "debit": 0, "credit": 1350, "type": "دفعة", "deviceType": "", "cost": 0, "profit": 0, "supplier": "", "buyerPhone": "", "serial": "531"}];
+
+  let state = { customers: [], purchases: [], payments: [], history: [], settings: { overdueDays: 45, currency: "₪" } };
+  let ready = false;
+  let currentTab = "customers";
+  let search = { customers:"", purchases:"", payments:"", statements:"" };
+  let statFilter = "all";
+  let sortDesc = true;
+  let saveStatus = 'ok'; // 'ok' | 'error'
+
+  // ---------- Firebase (real account + live sync across devices) ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMP_YZPO6U0kPfm0J945GebFpi7QRsjFw",
+    authDomain: "ramallahsmartphones-b665d.firebaseapp.com",
+    projectId: "ramallahsmartphones-b665d",
+    storageBucket: "ramallahsmartphones-b665d.firebasestorage.app",
+    messagingSenderId: "293481377053",
+    appId: "1:293481377053:web:55dbf210d9bf5f86c6c5f4"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const fbAuth = firebase.auth();
+  const db = firebase.firestore();
+  try{ db.enablePersistence({ synchronizeTabs: true }).catch(()=>{}); }catch(e){}
+
+  let firestoreUnsub = null;
+
+  function translateAuthError(code){
+    const map = {
+      'auth/email-already-in-use': 'هذا البريد مستخدم مسبقاً — جرّب تسجيل الدخول بدلاً من إنشاء حساب جديد',
+      'auth/invalid-email': 'صيغة البريد الإلكتروني غير صحيحة',
+      'auth/weak-password': 'كلمة المرور ضعيفة، استخدم ٦ أحرف على الأقل',
+      'auth/user-not-found': 'لا يوجد حساب بهذا البريد',
+      'auth/wrong-password': 'كلمة المرور غير صحيحة',
+      'auth/invalid-credential': 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+      'auth/network-request-failed': 'تعذر الاتصال بالإنترنت، تحقق من الاتصال وحاول مرة أخرى',
+      'auth/too-many-requests': 'محاولات كثيرة جداً، حاول لاحقاً',
+      'auth/missing-password': 'الرجاء إدخال كلمة المرور',
+    };
+    return map[code] || ('حدث خطأ: ' + code);
+  }
+
+  function renderAuthGate(mode){
+    mode = mode || 'login';
+    appEl.innerHTML = `
+      <div class="auth-wrap">
+        <div class="auth-card">
+          <div class="brand-mark" style="margin:0 auto 14px">أ</div>
+          <h1 style="text-align:center;margin:0 0 4px">مكة للهواتف الذكية</h1>
+          <p class="hint" style="text-align:center;margin-bottom:20px">${mode==='signup' ? 'أنشئ حساباً جديداً للبدء' : 'سجّل الدخول للمتابعة من أي جهاز'}</p>
+          <div class="field" style="margin-bottom:12px"><label>البريد الإلكتروني</label><input type="email" id="auth_email" autocomplete="username"></div>
+          <div class="field" style="margin-bottom:10px"><label>كلمة المرور</label><input type="password" id="auth_pass" autocomplete="${mode==='signup'?'new-password':'current-password'}"></div>
+          <p id="authError" class="hint" style="color:var(--bad);min-height:16px;margin-bottom:10px"></p>
+          <button class="btn btn-primary" id="auth_submit_btn" style="width:100%">${mode==='signup' ? 'إنشاء الحساب' : 'دخول'}</button>
+          <p class="hint" style="text-align:center;margin-top:16px">
+            ${mode==='signup' ? 'لديك حساب مسبقاً؟ ' : 'ليس لديك حساب؟ '}
+            <a href="#" id="switchMode" style="color:var(--brass);font-weight:700;text-decoration:none">${mode==='signup' ? 'سجّل الدخول' : 'أنشئ حساباً جديداً'}</a>
+          </p>
+          ${mode==='login' ? '<p class="hint" style="text-align:center;margin-top:4px"><a href="#" id="forgotPass" style="color:var(--muted);text-decoration:underline">نسيت كلمة المرور؟</a></p>' : ''}
+        </div>
+      </div>
+    `;
+    document.getElementById("switchMode").addEventListener("click",(e)=>{ e.preventDefault(); renderAuthGate(mode==='signup'?'login':'signup'); });
+    const submit = () => {
+      const email = document.getElementById("auth_email").value.trim();
+      const pass = document.getElementById("auth_pass").value;
+      const errEl = document.getElementById("authError");
+      errEl.textContent = "";
+      if(!email || !pass){ errEl.textContent = "الرجاء تعبئة كل الحقول"; return; }
+      const action = mode==='signup'
+        ? fbAuth.createUserWithEmailAndPassword(email, pass)
+        : fbAuth.signInWithEmailAndPassword(email, pass);
+      action.catch(err => { errEl.textContent = translateAuthError(err.code); });
+    };
+    document.getElementById("auth_submit_btn").addEventListener("click", submit);
+    document.getElementById("auth_pass").addEventListener("keydown",(e)=>{ if(e.key==="Enter") submit(); });
+    const forgot = document.getElementById("forgotPass");
+    if(forgot){
+      forgot.addEventListener("click",(e)=>{
+        e.preventDefault();
+        const email = document.getElementById("auth_email").value.trim();
+        if(!email){ document.getElementById("authError").textContent = "اكتب بريدك الإلكتروني أولاً ثم اضغط الرابط"; return; }
+        fbAuth.sendPasswordResetEmail(email)
+          .then(()=>showToast("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك"))
+          .catch(err=>{ document.getElementById("authError").textContent = translateAuthError(err.code); });
+      });
+    }
+  }
+
+  function attachFirestoreListener(uid){
+    if(firestoreUnsub) firestoreUnsub();
+    const docRef = db.collection('ledgers').doc(uid);
+    firestoreUnsub = docRef.onSnapshot((snap) => {
+      if(snap.exists){
+        const data = snap.data();
+        state.customers = data.customers || [];
+        state.purchases = data.purchases || [];
+        state.payments = data.payments || [];
+        state.settings = Object.assign({overdueDays:45, currency:"₪"}, data.settings || {});
+        ready = true;
+        saveStatus = 'ok';
+        render();
+      } else {
+        ready = true;
+        offerLocalDataImportThenSave();
+      }
+    }, (err) => {
+      console.error(err);
+      saveStatus = 'error';
+      ready = true;
+      render();
+    });
+  }
+
+  function offerLocalDataImportThenSave(){
+    // brand-new account: offer to import any data previously stored on this device/browser
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        const parsed = JSON.parse(raw);
+        const has = (parsed.customers&&parsed.customers.length) || (parsed.purchases&&parsed.purchases.length) || (parsed.payments&&parsed.payments.length);
+        if(has && confirm('وجدنا بيانات محفوظة سابقاً على هذا الجهاز، هل تريد استيرادها لهذا الحساب الجديد؟')){
+          state.customers = parsed.customers || [];
+          state.purchases = parsed.purchases || [];
+          state.payments = parsed.payments || [];
+          state.settings = Object.assign({overdueDays:45, currency:"₪"}, parsed.settings || {});
+        }
+      }
+    }catch(e){ /* ignore */ }
+    saveData();
+    render();
+  }
+
+  fbAuth.onAuthStateChanged((user) => {
+    if(user){
+      attachFirestoreListener(user.uid);
+    } else {
+      if(firestoreUnsub){ firestoreUnsub(); firestoreUnsub = null; }
+      ready = false;
+      renderAuthGate('login');
+    }
+  });
+
+  const appEl = document.getElementById("app");
+  const toastEl = document.getElementById("toast");
+
+  function showToast(msg){ toastEl.textContent = msg; toastEl.classList.add("show"); setTimeout(()=>toastEl.classList.remove("show"), 2200); }
+  function uid(p){ return (p||'id') + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,9); }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function fmtDate(d){ if(!d) return "—"; const dt=new Date(d); if(isNaN(dt)) return "—";
+    return dt.toLocaleDateString('ar-EG', {year:'numeric', month:'2-digit', day:'2-digit'}); }
+  function fmtDateTime(d){ if(!d) return "—"; const dt=new Date(d); if(isNaN(dt)) return "—";
+    return dt.toLocaleDateString('ar-EG', {year:'numeric', month:'2-digit', day:'2-digit'}) + ' ' + dt.toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}); }
+  function num(n){ n = Number(n)||0; return n.toLocaleString('en-US', {maximumFractionDigits:2}); }
+  function money(n){ return num(n) + ' ' + state.settings.currency; }
+  function daysSince(dateStr){ if(!dateStr) return Infinity; const d=new Date(dateStr); if(isNaN(d)) return Infinity;
+    return Math.floor((Date.now()-d.getTime())/86400000); }
+
+  // ---------- storage ----------
+  // This version stores everything in Firestore, tied to your account (fbAuth.currentUser).
+  // Real-time updates arrive automatically via attachFirestoreListener()'s onSnapshot above.
+  async function saveData(){
+    const user = fbAuth.currentUser;
+    if(!user) return;
+    try{
+      await db.collection('ledgers').doc(user.uid).set({
+        customers: state.customers,
+        purchases: state.purchases,
+        payments: state.payments,
+        settings: state.settings,
+      });
+      if(saveStatus !== 'ok'){ saveStatus = 'ok'; render(); }
+    }catch(e){
+      console.error(e);
+      if(saveStatus !== 'error'){ saveStatus = 'error'; render(); }
+    }
+  }
+
+  // ---------- change history / archive ----------
+  function logHistory(entityType, action, before, after){
+    if(!state.history) state.history = [];
+    state.history.push({
+      id: uid('hist'),
+      entityType, // 'customer' | 'sale' | 'receipt'
+      action,     // 'create' | 'update' | 'delete'
+      before: before || null,
+      after: after || null,
+      at: new Date().toISOString(),
+    });
+    // keep the log from growing without bound
+    if(state.history.length > 2000) state.history = state.history.slice(-2000);
+  }
+
+  // ---------- customer lookups ----------
+  function findCustomer(name){
+    const key = (name||"").trim();
+    return state.customers.find(c => c.name === key);
+  }
+  function ensureCustomerExists(name, phone){
+    const key = (name||"").trim();
+    if(!key) return;
+    let c = findCustomer(key);
+    if(!c){
+      c = { id: uid('cus'), name:key, phone: phone||"", address:"", notes:"", doubtful:false,
+            createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+      state.customers.push(c);
+      logHistory('customer', 'create', null, Object.assign({}, c));
+    } else if(phone && !c.phone){
+      const before = Object.assign({}, c);
+      c.phone = phone; c.updatedAt = new Date().toISOString();
+      logHistory('customer', 'update', before, Object.assign({}, c));
+    }
+  }
+  function allCustomerNames(){
+    const names = new Set(state.customers.map(c=>c.name));
+    state.purchases.forEach(p=>names.add(p.customerName));
+    state.payments.forEach(p=>names.add(p.customerName));
+    return Array.from(names).filter(Boolean).sort();
+  }
+
+  // ---------- derived accounts ----------
+  function computeAccounts(){
+    const map = new Map();
+    function get(name){
+      const key = (name||"").trim() || "(بدون اسم)";
+      if(!map.has(key)){
+        const cust = findCustomer(key);
+        map.set(key, {
+          name:key, phone: cust?cust.phone:"", address: cust?cust.address:"", notes: cust?cust.notes:"",
+          doubtful: cust?!!cust.doubtful:false,
+          totalDebit:0, totalCredit:0, totalProfit:0,
+          firstPurchase:null, lastActivity:null, lastPayment:null, purCount:0, payCount:0
+        });
+      }
+      return map.get(key);
+    }
+    for(const p of state.purchases){
+      const c = get(p.customerName);
+      c.totalDebit += Number(p.price)||0;
+      c.totalProfit += Number(p.profit)||0;
+      c.purCount++;
+      if(!c.firstPurchase || new Date(p.date) < new Date(c.firstPurchase)) c.firstPurchase = p.date;
+      if(!c.lastActivity || new Date(p.date) > new Date(c.lastActivity)) c.lastActivity = p.date;
+    }
+    for(const p of state.payments){
+      const c = get(p.customerName);
+      c.totalCredit += Number(p.amount)||0;
+      c.payCount++;
+      if(!c.lastPayment || new Date(p.date) > new Date(c.lastPayment)) c.lastPayment = p.date;
+      if(!c.lastActivity || new Date(p.date) > new Date(c.lastActivity)) c.lastActivity = p.date;
+    }
+    // include customers with zero activity too
+    state.customers.forEach(cust => get(cust.name));
+    const list = Array.from(map.values()).map(c=>{
+      c.balance = c.totalDebit - c.totalCredit;
+      c.collectedProfit = c.totalDebit > 0 ? c.totalProfit * Math.min(1, c.totalCredit/c.totalDebit) : 0;
+      c.overdue = c.balance > 0.009 && daysSince(c.lastActivity) > (state.settings.overdueDays||45);
+      c.paidOff = c.balance <= 0.009 && c.totalDebit > 0;
+      c.hasPending = c.balance > 0.009;
+      return c;
+    });
+    list.sort((a,b)=>(b.lastActivity||"").localeCompare(a.lastActivity||""));
+    return list;
+  }
+
+  function datalistNames(id){
+    return `<datalist id="${id}">${allCustomerNames().map(n=>`<option value="${esc(n)}">`).join('')}</datalist>`;
+  }
+
+  // ---------- render shell ----------
+  function render(){
+    if(!ready){ appEl.innerHTML = '<div class="app-loading">جارِ التحميل…</div>'; return; }
+
+    // remember focus + cursor position so re-rendering doesn't kick the user out of a text field
+    const active = document.activeElement;
+    const activeId = active && active.id;
+    const selStart = active && typeof active.selectionStart === 'number' ? active.selectionStart : null;
+    const selEnd = active && typeof active.selectionEnd === 'number' ? active.selectionEnd : null;
+
+    const accounts = computeAccounts();
+
+    appEl.innerHTML = `
+      <div class="topbar">
+        <div class="brand">
+          <div class="brand-mark">أ</div>
+          <div class="brand-text"><h1>مكة للهواتف الذكية</h1><span>متابعة مبيعات الأجهزة والتحصيل</span></div>
+        </div>
+      </div>
+      ${saveStatus==='error' ? `
+      <div class="save-warning">⚠️ تعذر الاتصال بقاعدة البيانات — تحقق من اتصال الإنترنت. تعديلاتك محفوظة مؤقتاً في هذا الجهاز وستتزامن تلقائياً عند عودة الاتصال</div>
+      ` : ''}
+      <div class="tabs">
+        <button class="tabbtn ${currentTab==='customers'?'active':''}" data-tab="customers">معلومات العملاء</button>
+        <button class="tabbtn ${currentTab==='purchases'?'active':''}" data-tab="purchases">المبيعات</button>
+        <button class="tabbtn ${currentTab==='payments'?'active':''}" data-tab="payments">المقبوضات</button>
+        <button class="tabbtn ${currentTab==='statements'?'active':''}" data-tab="statements">كشوف الحسابات</button>
+        <button class="tabbtn ${currentTab==='modifications'?'active':''}" data-tab="modifications">تقرير التعديلات</button>
+        <button class="tabbtn ${currentTab==='settings'?'active':''}" data-tab="settings">الإعدادات</button>
+      </div>
+      <div id="tabContent"></div>
+    `;
+    document.querySelectorAll(".tabbtn").forEach(b=>b.addEventListener("click", ()=>{ currentTab=b.dataset.tab; render(); }));
+
+    const content = document.getElementById("tabContent");
+    if(currentTab==="customers") content.innerHTML = renderCustomersInfo();
+    else if(currentTab==="purchases") content.innerHTML = renderPurchases();
+    else if(currentTab==="payments") content.innerHTML = renderPayments();
+    else if(currentTab==="statements") content.innerHTML = renderStatements(accounts);
+    else if(currentTab==="modifications") content.innerHTML = renderModifications();
+    else content.innerHTML = renderSettings();
+
+    bindEvents(accounts);
+
+    // restore focus + cursor position (e.g. search boxes) after the re-render above
+    if(activeId){
+      const el = document.getElementById(activeId);
+      if(el && typeof el.focus === 'function'){
+        el.focus();
+        if(selStart !== null && typeof el.setSelectionRange === 'function'){
+          try{ el.setSelectionRange(selStart, selEnd); }catch(e){}
+        }
+      }
+    }
+  }
+
+  // ---------- customers info page ----------
+  function renderCustomersInfo(){
+    let list = state.customers.slice();
+    const q = search.customers.trim().toLowerCase();
+    if(q) list = list.filter(c => c.name.toLowerCase().includes(q) || (c.phone||"").includes(q) || (c.address||"").toLowerCase().includes(q));
+    list.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
+    return `
+      <div class="card">
+        <div class="card-head">
+          <h2>معلومات العملاء</h2>
+          <div class="row">
+            <input type="text" id="searchCustomers" placeholder="بحث بالاسم أو الهاتف أو العنوان" value="${esc(search.customers)}" style="min-width:230px">
+            <button class="btn btn-primary" id="addCustomerBtn">+ إضافة عميل</button>
+          </div>
+        </div>
+        ${list.length===0 ? emptyState('لا يوجد عملاء بعد', 'أضف أول عميل، أو أضف عملية بيع/قبض وسيُنشأ العميل تلقائياً.') : `
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>العنوان</th><th>ملاحظات</th><th></th></tr></thead>
+          <tbody>
+            ${list.map(c=>`
+              <tr>
+                <td class="name-cell">${esc(c.name)}</td>
+                <td class="muted">${esc(c.phone)||'—'}</td>
+                <td class="muted" style="white-space:normal">${esc(c.address)||'—'}</td>
+                <td class="muted" style="white-space:normal">${esc(c.notes)||'—'}</td>
+                <td><button class="icon-btn" data-editcust="${c.id}" title="تعديل">✎</button>
+                    <button class="icon-btn" data-delcust="${c.id}" title="حذف">✕</button></td>
+              </tr>`).join('')}
+          </tbody>
+        </table></div>`}
+      </div>
+    `;
+  }
+
+  function openCustomerModal(id){
+    const editing = id ? state.customers.find(c=>c.id===id) : null;
+    const wrap = document.createElement("div");
+    wrap.className = "overlay";
+    wrap.innerHTML = `
+      <div class="modal">
+        <h3>${editing?'تعديل بيانات عميل':'إضافة عميل جديد'}</h3>
+        <div class="grid2">
+          <div class="field grow"><label>اسم العميل *</label><input type="text" id="cf_name" value="${editing?esc(editing.name):''}"></div>
+          <div class="field"><label>رقم الهاتف</label><input type="text" id="cf_phone" value="${editing?esc(editing.phone):''}"></div>
+          <div class="field grow"><label>العنوان</label><input type="text" id="cf_address" value="${editing?esc(editing.address):''}"></div>
+          <div class="field grow"><label>ملاحظات</label><input type="text" id="cf_notes" value="${editing?esc(editing.notes):''}"></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="cancelBtn">إلغاء</button>
+          <button class="btn btn-primary" id="saveBtn">${editing?'حفظ التعديلات':'إضافة'}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    wrap.addEventListener("click",(e)=>{ if(e.target===wrap) document.body.removeChild(wrap); });
+    document.getElementById("cancelBtn").addEventListener("click", ()=>document.body.removeChild(wrap));
+    document.getElementById("saveBtn").addEventListener("click", ()=>{
+      const name = document.getElementById("cf_name").value.trim();
+      if(!name){ showToast("الرجاء إدخال اسم العميل"); return; }
+      if(!editing && findCustomer(name)){ showToast("يوجد عميل بهذا الاسم مسبقاً"); return; }
+      const now = new Date().toISOString();
+      const data = { name, phone: document.getElementById("cf_phone").value.trim(),
+        address: document.getElementById("cf_address").value.trim(), notes: document.getElementById("cf_notes").value.trim() };
+      if(editing){
+        const before = Object.assign({}, editing);
+        const oldName = editing.name;
+        Object.assign(editing, data, {updatedAt: now});
+        if(oldName !== data.name){
+          state.purchases.forEach(p=>{ if(p.customerName===oldName) p.customerName = data.name; });
+          state.payments.forEach(p=>{ if(p.customerName===oldName) p.customerName = data.name; });
+        }
+        logHistory('customer', 'update', before, Object.assign({}, editing));
+        showToast("تم حفظ التعديلات");
+      } else {
+        const newCust = Object.assign({id:uid('cus'), doubtful:false, createdAt:now, updatedAt:now}, data);
+        state.customers.push(newCust);
+        logHistory('customer', 'create', null, Object.assign({}, newCust));
+        showToast("تمت إضافة العميل");
+      }
+      saveData(); document.body.removeChild(wrap); render();
+    });
+  }
+
+  function deleteCustomer(id){
+    const c = state.customers.find(x=>x.id===id);
+    if(!c) return;
+    const hasRecords = state.purchases.some(p=>p.customerName===c.name) || state.payments.some(p=>p.customerName===c.name);
+    const msg = hasRecords
+      ? "هذا العميل لديه عمليات بيع أو قبض مسجلة. سيتم حذف بياناته الشخصية فقط (سيبقى اسمه في السجلات). متابعة؟"
+      : "هل تريد حذف هذا العميل؟";
+    if(!confirm(msg)) return;
+    state.customers = state.customers.filter(x=>x.id!==id);
+    logHistory('customer', 'delete', Object.assign({}, c), null);
+    saveData(); showToast("تم حذف العميل"); render();
+  }
+
+  // ---------- purchases page ----------
+  function renderPurchases(){
+    let list = state.purchases.slice();
+    const q = search.purchases.trim().toLowerCase();
+    if(q) list = list.filter(p => (p.customerName||"").toLowerCase().includes(q) || (p.productName||"").toLowerCase().includes(q) || (p.supplier||"").toLowerCase().includes(q));
+    list.sort((a,b)=> sortDesc ? (b.date||"").localeCompare(a.date||"") : (a.date||"").localeCompare(b.date||""));
+    const totalPrice = list.reduce((s,p)=>s+(Number(p.price)||0),0);
+    const totalProfit = list.reduce((s,p)=>s+(Number(p.profit)||0),0);
+    return `
+      <div class="card">
+        <div class="card-head">
+          <h2>المبيعات</h2>
+          <div class="row">
+            <input type="text" id="searchPurchases" placeholder="بحث بالعميل أو المنتج أو المورّد" value="${esc(search.purchases)}" style="min-width:230px">
+            <button class="btn btn-ghost btn-sm" id="sortBtn">${sortDesc?'الأحدث أولاً ▾':'الأقدم أولاً ▴'}</button>
+            <button class="btn btn-primary" id="addPurchaseBtn">+ إضافة عملية بيع</button>
+          </div>
+        </div>
+        <p class="hint">${list.length} عملية · إجمالي المبيعات ${money(totalPrice)} · إجمالي الربح ${money(totalProfit)}</p>
+        ${list.length===0 ? emptyState('لا توجد مشتريات مسجلة بعد','') : `
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>العميل</th><th>تاريخ البيع</th><th>المنتج</th><th>سعر البيع</th><th>التكلفة</th><th>الربح</th><th>المورّد</th><th>تاريخ الإنشاء</th><th></th></tr></thead>
+          <tbody>
+            ${list.map(p=>`
+              <tr>
+                <td class="name-cell">${esc(p.customerName)}</td>
+                <td class="muted">${fmtDate(p.date)}</td>
+                <td>${esc(p.productName)||'—'}</td>
+                <td class="num debit">${money(p.price)}</td>
+                <td class="num muted">${p.cost?money(p.cost):'—'}</td>
+                <td class="num" style="color:var(--brass)">${p.profit?money(p.profit):'—'}</td>
+                <td class="muted">${esc(p.supplier)||'—'}</td>
+                <td class="muted" style="font-size:12px">${fmtDateTime(p.createdAt)}</td>
+                <td><button class="icon-btn" data-editpur="${p.id}" title="تعديل">✎</button>
+                    <button class="icon-btn" data-delpur="${p.id}" title="حذف">✕</button></td>
+              </tr>`).join('')}
+          </tbody>
+        </table></div>`}
+      </div>
+      ${datalistNames('customerNamesList')}
+    `;
+  }
+
+  function openPurchaseModal(id){
+    const editing = id ? state.purchases.find(p=>p.id===id) : null;
+    const wrap = document.createElement("div");
+    wrap.className = "overlay";
+    wrap.innerHTML = `
+      <div class="modal">
+        <h3>${editing?'تعديل عملية بيع':'إضافة عملية بيع'}</h3>
+        <div class="grid2">
+          <div class="field grow"><label>اسم العميل *</label><input type="text" id="pf_name" list="customerNamesModalList" value="${editing?esc(editing.customerName):''}"></div>
+          <div class="field"><label>تاريخ البيع *</label><input type="date" id="pf_date" value="${editing?(editing.date||'').slice(0,10):new Date().toISOString().slice(0,10)}"></div>
+          <div class="field grow"><label>اسم المنتج</label><input type="text" id="pf_product" value="${editing?esc(editing.productName):''}" placeholder="مثال: Redmi 13C 256"></div>
+          <div class="field"><label>سعر البيع *</label><input type="number" id="pf_price" value="${editing&&editing.price?editing.price:''}"></div>
+          <div class="field"><label>التكلفة</label><input type="number" id="pf_cost" value="${editing&&editing.cost?editing.cost:''}"></div>
+          <div class="field"><label>الربح (تلقائي)</label><input type="number" id="pf_profit_display" value="${editing?((editing.price||0)-(editing.cost||0)):0}" disabled style="background:#f2ede0;color:var(--muted)"></div>
+          <div class="field grow"><label>المورّد</label><input type="text" id="pf_supplier" value="${editing?esc(editing.supplier):''}"></div>
+        </div>
+        <p class="hint">الربح يُحتسب تلقائياً = سعر البيع − التكلفة.</p>
+        ${datalistNames('customerNamesModalList')}
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="cancelBtn">إلغاء</button>
+          <button class="btn btn-primary" id="saveBtn">${editing?'حفظ التعديلات':'إضافة'}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    const updateProfitDisplay = () => {
+      const price = parseFloat(document.getElementById("pf_price").value)||0;
+      const cost = parseFloat(document.getElementById("pf_cost").value)||0;
+      document.getElementById("pf_profit_display").value = price - cost;
+    };
+    document.getElementById("pf_price").addEventListener("input", updateProfitDisplay);
+    document.getElementById("pf_cost").addEventListener("input", updateProfitDisplay);
+    wrap.addEventListener("click",(e)=>{ if(e.target===wrap) document.body.removeChild(wrap); });
+    document.getElementById("cancelBtn").addEventListener("click", ()=>document.body.removeChild(wrap));
+    document.getElementById("saveBtn").addEventListener("click", ()=>{
+      const name = document.getElementById("pf_name").value.trim();
+      const price = parseFloat(document.getElementById("pf_price").value)||0;
+      if(!name){ showToast("الرجاء إدخال اسم العميل"); return; }
+      if(!price){ showToast("الرجاء إدخال سعر البيع"); return; }
+      const now = new Date().toISOString();
+      const cost = parseFloat(document.getElementById("pf_cost").value)||0;
+      const data = {
+        customerName:name, date: document.getElementById("pf_date").value || now.slice(0,10),
+        productName: document.getElementById("pf_product").value.trim(), price,
+        cost, profit: price - cost,
+        supplier: document.getElementById("pf_supplier").value.trim(),
+      };
+      ensureCustomerExists(name);
+      if(editing){
+        const before = Object.assign({}, editing);
+        Object.assign(editing, data, {updatedAt: now});
+        logHistory('sale', 'update', before, Object.assign({}, editing));
+        showToast("تم حفظ التعديلات");
+      } else {
+        data.id=uid('pur'); data.createdAt=now; data.updatedAt=now;
+        state.purchases.push(data);
+        logHistory('sale', 'create', null, Object.assign({}, data));
+        showToast("تمت إضافة عملية البيع");
+      }
+      saveData(); document.body.removeChild(wrap); render();
+    });
+  }
+
+  // ---------- payments page ----------
+  function renderPayments(){
+    let list = state.payments.slice();
+    const q = search.payments.trim().toLowerCase();
+    if(q) list = list.filter(p => (p.customerName||"").toLowerCase().includes(q));
+    list.sort((a,b)=> sortDesc ? (b.date||"").localeCompare(a.date||"") : (a.date||"").localeCompare(b.date||""));
+    const totalAmount = list.reduce((s,p)=>s+(Number(p.amount)||0),0);
+    return `
+      <div class="card">
+        <div class="card-head">
+          <h2>المقبوضات</h2>
+          <div class="row">
+            <input type="text" id="searchPayments" placeholder="بحث باسم العميل" value="${esc(search.payments)}" style="min-width:230px">
+            <button class="btn btn-ghost btn-sm" id="sortBtn">${sortDesc?'الأحدث أولاً ▾':'الأقدم أولاً ▴'}</button>
+            <button class="btn btn-primary" id="addPaymentBtn">+ إضافة قبض</button>
+          </div>
+        </div>
+        <p class="hint">${list.length} عملية قبض · إجمالي المحصَّل ${money(totalAmount)}</p>
+        ${list.length===0 ? emptyState('لا توجد عمليات قبض مسجلة بعد','') : `
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>العميل</th><th>تاريخ القبض</th><th>المبلغ المقبوض</th><th>ملاحظات</th><th>تاريخ الإنشاء</th><th></th></tr></thead>
+          <tbody>
+            ${list.map(p=>`
+              <tr>
+                <td class="name-cell">${esc(p.customerName)}</td>
+                <td class="muted">${fmtDate(p.date)}</td>
+                <td class="num credit">${money(p.amount)}</td>
+                <td class="muted" style="white-space:normal">${esc(p.notes)||'—'}</td>
+                <td class="muted" style="font-size:12px">${fmtDateTime(p.createdAt)}</td>
+                <td><button class="icon-btn" data-editpay="${p.id}" title="تعديل">✎</button>
+                    <button class="icon-btn" data-delpay="${p.id}" title="حذف">✕</button></td>
+              </tr>`).join('')}
+          </tbody>
+        </table></div>`}
+      </div>
+      ${datalistNames('customerNamesList')}
+    `;
+  }
+
+  function openPaymentModal(id){
+    const editing = id ? state.payments.find(p=>p.id===id) : null;
+    const wrap = document.createElement("div");
+    wrap.className = "overlay";
+    wrap.innerHTML = `
+      <div class="modal">
+        <h3>${editing?'تعديل قبض':'إضافة قبض'}</h3>
+        <div class="grid2">
+          <div class="field grow"><label>اسم العميل *</label><input type="text" id="pyf_name" list="customerNamesModalList" value="${editing?esc(editing.customerName):''}"></div>
+          <div class="field"><label>تاريخ القبض *</label><input type="date" id="pyf_date" value="${editing?(editing.date||'').slice(0,10):new Date().toISOString().slice(0,10)}"></div>
+          <div class="field"><label>المبلغ المقبوض *</label><input type="number" id="pyf_amount" value="${editing&&editing.amount?editing.amount:''}"></div>
+          <div class="field grow"><label>ملاحظات</label><input type="text" id="pyf_notes" value="${editing?esc(editing.notes):''}"></div>
+        </div>
+        ${datalistNames('customerNamesModalList')}
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="cancelBtn">إلغاء</button>
+          <button class="btn btn-primary" id="saveBtn">${editing?'حفظ التعديلات':'إضافة'}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    wrap.addEventListener("click",(e)=>{ if(e.target===wrap) document.body.removeChild(wrap); });
+    document.getElementById("cancelBtn").addEventListener("click", ()=>document.body.removeChild(wrap));
+    document.getElementById("saveBtn").addEventListener("click", ()=>{
+      const name = document.getElementById("pyf_name").value.trim();
+      const amount = parseFloat(document.getElementById("pyf_amount").value)||0;
+      if(!name){ showToast("الرجاء إدخال اسم العميل"); return; }
+      if(!amount){ showToast("الرجاء إدخال المبلغ"); return; }
+      const now = new Date().toISOString();
+      const data = { customerName:name, date: document.getElementById("pyf_date").value || now.slice(0,10), amount,
+        notes: document.getElementById("pyf_notes").value.trim() };
+      ensureCustomerExists(name);
+      if(editing){
+        const before = Object.assign({}, editing);
+        Object.assign(editing, data, {updatedAt: now});
+        logHistory('receipt', 'update', before, Object.assign({}, editing));
+        showToast("تم حفظ التعديلات");
+      } else {
+        data.id=uid('pay'); data.createdAt=now; data.updatedAt=now;
+        state.payments.push(data);
+        logHistory('receipt', 'create', null, Object.assign({}, data));
+        showToast("تمت إضافة عملية القبض");
+      }
+      saveData(); document.body.removeChild(wrap); render();
+    });
+  }
+
+  // ---------- statements (account balances) ----------
+  function computeMonthlyStats(){
+    const map = new Map(); // 'YYYY-MM' -> {sales, cost, collections}
+    function key(dateStr){
+      const d = new Date(dateStr);
+      if(isNaN(d)) return null;
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    }
+    function get(k){
+      if(!map.has(k)) map.set(k, {sales:0, cost:0, collections:0});
+      return map.get(k);
+    }
+    for(const p of state.purchases){
+      const k = key(p.date);
+      if(!k) continue;
+      const m = get(k);
+      m.sales += Number(p.price)||0;
+      m.cost += Number(p.cost)||0;
+    }
+    for(const p of state.payments){
+      const k = key(p.date);
+      if(!k) continue;
+      get(k).collections += Number(p.amount)||0;
+    }
+    const monthNames = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    return Array.from(map.entries())
+      .sort((a,b)=> b[0].localeCompare(a[0]))
+      .map(([k, v]) => {
+        const [y, m] = k.split('-');
+        return { key:k, label: monthNames[parseInt(m,10)-1] + ' ' + y, ...v };
+      });
+  }
+
+  function renderStatements(accounts){
+    let list = accounts.slice();
+    const totalDue = accounts.reduce((s,c)=>s+Math.max(0,c.balance),0);
+    const totalProfit = accounts.reduce((s,c)=>s+c.totalProfit,0);
+    const monthly = computeMonthlyStats();
+    const q = search.statements.trim().toLowerCase();
+    if(q) list = list.filter(c => c.name.toLowerCase().includes(q) || (c.phone||"").includes(q));
+    const counts = {
+      all: accounts.length,
+      pending: accounts.filter(c=>c.hasPending).length,
+      paid: accounts.filter(c=>c.paidOff).length,
+      overdue: accounts.filter(c=>c.overdue).length,
+      doubtful: accounts.filter(c=>c.doubtful).length,
+    };
+    if(statFilter==='pending') list = list.filter(c=>c.hasPending);
+    else if(statFilter==='paid') list = list.filter(c=>c.paidOff);
+    else if(statFilter==='overdue') list = list.filter(c=>c.overdue);
+    else if(statFilter==='doubtful') list = list.filter(c=>c.doubtful);
+    return `
+      <div class="card">
+        <div class="card-head"><h2>إحصائيات</h2></div>
+        <div class="cstats" style="margin-bottom:${monthly.length?'18px':'0'}">
+          <div class="cstat"><b>${money(totalDue)}</b><small>مستحق حالياً</small></div>
+          <div class="cstat"><b>${money(totalProfit)}</b><small>إجمالي الربح</small></div>
+          <div class="cstat"><b>${accounts.length}</b><small>عدد العملاء</small></div>
+        </div>
+        ${monthly.length ? `
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>الشهر</th><th>مبلغ المبيعات</th><th>تكلفة الأجهزة المباعة</th><th>مبلغ التحصيل</th></tr></thead>
+          <tbody>
+            ${monthly.map(m=>`
+              <tr>
+                <td class="name-cell">${esc(m.label)}</td>
+                <td class="num debit">${money(m.sales)}</td>
+                <td class="num muted">${money(m.cost)}</td>
+                <td class="num credit">${money(m.collections)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table></div>` : ''}
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h2>كشوف حسابات العملاء</h2>
+          <input type="text" id="searchStatements" placeholder="بحث بالاسم أو الهاتف" value="${esc(search.statements)}" style="min-width:220px">
+        </div>
+        <div class="row" style="margin-bottom:16px">
+          ${filterChip('all','الكل',counts.all)}
+          ${filterChip('pending','عليهم دفعات',counts.pending)}
+          ${filterChip('paid','مسددون بالكامل',counts.paid)}
+          ${filterChip('overdue','متأخرون',counts.overdue)}
+          ${filterChip('doubtful','مشكوك في تحصيلهم',counts.doubtful)}
+        </div>
+        ${list.length===0?emptyState('لا يوجد عملاء ضمن هذا الفلتر',''):list.map(c=>customerCard(c)).join('')}
+      </div>
+    `;
+  }
+  function filterChip(key,label,count){ return `<button class="filter-chip ${statFilter===key?'active':''}" data-filter="${key}">${label} <span class="cnt">${count}</span></button>`; }
+  function customerCard(c){
+    let badge='';
+    if(c.doubtful) badge='<span class="badge badge-bad">مشكوك في التحصيل</span>';
+    else if(c.overdue) badge='<span class="badge badge-warn">متأخر</span>';
+    else if(c.paidOff) badge='<span class="badge badge-ok">مسدد بالكامل</span>';
+    else if(c.hasPending) badge='<span class="badge badge-muted">عليه دفعات</span>';
+    return `
+      <div class="customer-card">
+        <div class="customer-top">
+          <div><div class="customer-name">${esc(c.name)} ${badge}</div>
+          <div class="customer-phone">${esc(c.phone)||'بدون رقم هاتف'} · ${c.purCount} عملية بيع · ${c.payCount} عملية قبض</div></div>
+          <label class="doubt-toggle"><input type="checkbox" data-doubtful="${esc(c.name)}" ${c.doubtful?'checked':''}> مشكوك في التحصيل</label>
+        </div>
+        <div class="cstats">
+          <div class="cstat"><b>${money(Math.max(0,c.balance))}</b><small>المبلغ المستحق</small></div>
+          <div class="cstat"><b>${fmtDate(c.firstPurchase)}</b><small>تاريخ أول عملية بيع</small></div>
+          <div class="cstat"><b>${fmtDate(c.lastPayment)}</b><small>آخر عملية قبض</small></div>
+          <div class="cstat"><b class="muted">${money(c.totalProfit)}</b><small>الربح الإجمالي المتوقع</small></div>
+        </div>
+      </div>`;
+  }
+
+  // ---------- modifications report ----------
+  // field labels per entity, for readable diffs
+  const FIELD_LABELS = {
+    customer: { name:'الاسم', phone:'الهاتف', address:'العنوان', notes:'ملاحظات', doubtful:'مشكوك في التحصيل' },
+    sale: { customerName:'العميل', date:'تاريخ البيع', productName:'المنتج', price:'سعر البيع', cost:'التكلفة', profit:'الربح', supplier:'المورّد' },
+    receipt: { customerName:'العميل', date:'تاريخ القبض', amount:'المبلغ المقبوض', notes:'ملاحظات' },
+  };
+  const ENTITY_LABELS = { customer:'عميل', sale:'عملية بيع', receipt:'عملية قبض' };
+  const ACTION_LABELS = { create:'إضافة', update:'تعديل', delete:'حذف' };
+  const ACTION_BADGE = { create:'badge-ok', update:'badge-warn', delete:'badge-bad' };
+
+  function fmtFieldValue(v){
+    if(v === null || v === undefined || v === '') return '—';
+    if(typeof v === 'boolean') return v ? 'نعم' : 'لا';
+    return esc(String(v));
+  }
+
+  function renderHistoryDiff(entry){
+    const labels = FIELD_LABELS[entry.entityType] || {};
+    const keys = Object.keys(labels);
+    if(entry.action === 'create'){
+      return keys.filter(k => entry.after && entry.after[k] !== undefined && entry.after[k] !== '' && entry.after[k] !== 0 || (k==='price'||k==='cost'||k==='profit'||k==='amount'))
+        .map(k => `<div class="diff-row"><span class="diff-label">${labels[k]}:</span> <span class="diff-new">${fmtFieldValue(entry.after ? entry.after[k] : null)}</span></div>`).join('');
+    }
+    if(entry.action === 'delete'){
+      return keys.map(k => `<div class="diff-row"><span class="diff-label">${labels[k]}:</span> <span class="diff-old" style="text-decoration:line-through">${fmtFieldValue(entry.before ? entry.before[k] : null)}</span></div>`).join('');
+    }
+    // update: only show fields that actually changed
+    const changed = keys.filter(k => JSON.stringify(entry.before ? entry.before[k] : null) !== JSON.stringify(entry.after ? entry.after[k] : null));
+    if(changed.length === 0) return '<span class="muted">لا يوجد تغيير في الحقول المعروضة</span>';
+    return changed.map(k => `<div class="diff-row"><span class="diff-label">${labels[k]}:</span> <span class="diff-old">${fmtFieldValue(entry.before[k])}</span> ← <span class="diff-new">${fmtFieldValue(entry.after[k])}</span></div>`).join('');
+  }
+
+  function renderModifications(){
+    const rows = (state.history||[]).slice().sort((a,b)=>(b.at||"").localeCompare(a.at||""));
+    return `
+      <div class="card">
+        <div class="card-head"><h2>أرشيف التعديلات</h2></div>
+        <p class="hint">سجل كامل لكل إضافة أو تعديل أو حذف على العملاء والمبيعات والمقبوضات، مع بيان القيمة قبل التعديل وبعده.</p>
+        ${rows.length===0?emptyState('لا يوجد سجل تعديلات بعد',''):`
+        <div class="table-wrap">
+        <table>
+          <thead><tr><th>الوقت</th><th>النوع</th><th>الإجراء</th><th>التفاصيل</th></tr></thead>
+          <tbody>
+            ${rows.map(h=>`
+              <tr>
+                <td class="muted" style="font-size:12px;white-space:normal">${fmtDateTime(h.at)}</td>
+                <td>${ENTITY_LABELS[h.entityType]||h.entityType}</td>
+                <td><span class="badge ${ACTION_BADGE[h.action]||'badge-muted'}">${ACTION_LABELS[h.action]||h.action}</span></td>
+                <td style="white-space:normal">${renderHistoryDiff(h)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table></div>`}
+      </div>
+    `;
+  }
+
+  // ---------- settings ----------
+  function renderSettings(){
+    return `
+      <div class="card">
+        <div class="card-head"><h2>الإعدادات</h2></div>
+        <div class="grid2">
+          <div class="field">
+            <label>عدد الأيام لاعتبار العميل متأخراً</label>
+            <input type="number" id="overdueDaysInput" value="${state.settings.overdueDays}" min="1">
+            <div class="hint">إذا مرّت هذه المدة دون أي حركة وكان على العميل مبلغ مستحق، يُصنَّف كـ"متأخر".</div>
+          </div>
+          <div class="field"><label>رمز العملة</label><input type="text" id="currencyInput" value="${esc(state.settings.currency)}" maxlength="4"></div>
+        </div>
+        <div class="row" style="margin-top:16px"><button class="btn btn-primary" id="saveSettingsBtn">حفظ الإعدادات</button></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>الحساب</h2></div>
+        <p class="hint">مسجّل دخول حالياً بالبريد: <b style="color:var(--ink)">${esc(fbAuth.currentUser?fbAuth.currentUser.email:'—')}</b></p>
+        <p class="hint">بياناتك متزامنة تلقائياً مع هذا الحساب — يمكنك تسجيل الدخول به من أي جهاز أو متصفح وستجد نفس البيانات فوراً.</p>
+        <div class="row">
+          <button class="btn btn-ghost" id="resetPassBtn">إرسال رابط تغيير كلمة المرور لبريدي</button>
+          <button class="btn btn-ghost" id="signOutBtn">تسجيل الخروج</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>نسخ احتياطي</h2></div>
+        <p class="hint">تنزيل نسخة من كل بياناتك كملف JSON. ننصح بأخذ نسخة بشكل دوري كضمان إضافي، أو لنقل البيانات لجهاز آخر.</p>
+        <div class="row"><button class="btn btn-ghost" id="exportBtn">تنزيل نسخة احتياطية</button></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>استيراد ذمم دفتر ٢٠٢٤ (تقسيط)</h2></div>
+        <p class="hint">استيراد لمرة واحدة لجميع العملاء الذين بقي عليهم رصيد مستحق من صفحة "تقسيط" في ملف إكسل ٢٠٢٤
+        (${SEED_TAQSEET_2024.length} حركة تخص 37 عميلاً، بإجمالي رصيد مستحق قدره تقريباً 68,999).</p>
+        <div class="row">
+          <button class="btn btn-primary" id="importTaqseetBtn" ${state.settings.importedTaqseet2024?'disabled':''}>
+            ${state.settings.importedTaqseet2024?'تم الاستيراد مسبقاً ✓':'استيراد الآن'}
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function exportBackup(){
+    const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href=url; a.download="نسخة-احتياطية-الدفتر.json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    showToast("تم تنزيل النسخة الاحتياطية");
+  }
+
+  function importTaqseet2024(){
+    if(state.settings.importedTaqseet2024) return;
+    const now = new Date().toISOString();
+    for(const row of SEED_TAQSEET_2024){
+      ensureCustomerExists(row.buyerName, row.buyerPhone);
+      if(Number(row.debit) > 0){
+        state.purchases.push({ id: uid('pur'), customerName: row.buyerName, date: row.date,
+          productName: row.deviceType||"", price: Number(row.debit)||0, cost: Number(row.cost)||0,
+          profit: Number(row.profit)||0, supplier: row.supplier||"", createdAt: now, updatedAt: now });
+      }
+      if(Number(row.credit) > 0){
+        state.payments.push({ id: uid('pay'), customerName: row.buyerName, date: row.date,
+          amount: Number(row.credit)||0, createdAt: now, updatedAt: now });
+      }
+    }
+    state.settings.importedTaqseet2024 = true;
+    saveData(); showToast(`تم استيراد ${SEED_TAQSEET_2024.length} حركة`); render();
+  }
+
+  function emptyState(title, sub){ return `<div class="empty"><b>${esc(title)}</b>${sub?`<div>${esc(sub)}</div>`:''}</div>`; }
+
+  // ---------- events ----------
+  function bindEvents(accounts){
+    if(currentTab==="customers"){
+      document.getElementById("addCustomerBtn").addEventListener("click", ()=>openCustomerModal(null));
+      document.getElementById("searchCustomers").addEventListener("input",(e)=>{ search.customers=e.target.value; render(); });
+      document.querySelectorAll("[data-editcust]").forEach(b=>b.addEventListener("click",()=>openCustomerModal(b.dataset.editcust)));
+      document.querySelectorAll("[data-delcust]").forEach(b=>b.addEventListener("click",()=>deleteCustomer(b.dataset.delcust)));
+    } else if(currentTab==="purchases"){
+      document.getElementById("addPurchaseBtn").addEventListener("click", ()=>openPurchaseModal(null));
+      document.getElementById("searchPurchases").addEventListener("input",(e)=>{ search.purchases=e.target.value; render(); });
+      document.getElementById("sortBtn").addEventListener("click", ()=>{ sortDesc=!sortDesc; render(); });
+      document.querySelectorAll("[data-editpur]").forEach(b=>b.addEventListener("click",()=>openPurchaseModal(b.dataset.editpur)));
+      document.querySelectorAll("[data-delpur]").forEach(b=>b.addEventListener("click",()=>{
+        if(!confirm("هل تريد حذف عملية البيع هذه؟")) return;
+        const rec = state.purchases.find(p=>p.id===b.dataset.delpur);
+        state.purchases = state.purchases.filter(p=>p.id!==b.dataset.delpur);
+        if(rec) logHistory('sale', 'delete', Object.assign({}, rec), null);
+        saveData(); showToast("تم الحذف"); render();
+      }));
+    } else if(currentTab==="payments"){
+      document.getElementById("addPaymentBtn").addEventListener("click", ()=>openPaymentModal(null));
+      document.getElementById("searchPayments").addEventListener("input",(e)=>{ search.payments=e.target.value; render(); });
+      document.getElementById("sortBtn").addEventListener("click", ()=>{ sortDesc=!sortDesc; render(); });
+      document.querySelectorAll("[data-editpay]").forEach(b=>b.addEventListener("click",()=>openPaymentModal(b.dataset.editpay)));
+      document.querySelectorAll("[data-delpay]").forEach(b=>b.addEventListener("click",()=>{
+        if(!confirm("هل تريد حذف عملية القبض هذه؟")) return;
+        const rec = state.payments.find(p=>p.id===b.dataset.delpay);
+        state.payments = state.payments.filter(p=>p.id!==b.dataset.delpay);
+        if(rec) logHistory('receipt', 'delete', Object.assign({}, rec), null);
+        saveData(); showToast("تم الحذف"); render();
+      }));
+    } else if(currentTab==="statements"){
+      document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{ statFilter=b.dataset.filter; render(); }));
+      document.getElementById("searchStatements").addEventListener("input",(e)=>{ search.statements=e.target.value; render(); });
+      document.querySelectorAll("[data-doubtful]").forEach(cb=>cb.addEventListener("change",(e)=>{
+        const name = cb.dataset.doubtful;
+        ensureCustomerExists(name);
+        findCustomer(name).doubtful = e.target.checked;
+        findCustomer(name).updatedAt = new Date().toISOString();
+        saveData(); render();
+      }));
+    } else if(currentTab==="settings"){
+      document.getElementById("saveSettingsBtn").addEventListener("click", ()=>{
+        const days = parseInt(document.getElementById("overdueDaysInput").value,10);
+        const cur = document.getElementById("currencyInput").value.trim() || "₪";
+        state.settings.overdueDays = isNaN(days)?45:days;
+        state.settings.currency = cur;
+        saveData(); showToast("تم حفظ الإعدادات"); render();
+      });
+      document.getElementById("exportBtn").addEventListener("click", exportBackup);
+      document.getElementById("resetPassBtn").addEventListener("click", ()=>{
+        const email = fbAuth.currentUser && fbAuth.currentUser.email;
+        if(!email) return;
+        fbAuth.sendPasswordResetEmail(email)
+          .then(()=>showToast("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك"))
+          .catch(err=>showToast(translateAuthError(err.code)));
+      });
+      document.getElementById("signOutBtn").addEventListener("click", ()=>{
+        if(confirm("هل تريد تسجيل الخروج؟")) fbAuth.signOut();
+      });
+      const importBtn = document.getElementById("importTaqseetBtn");
+      if(importBtn && !state.settings.importedTaqseet2024) importBtn.addEventListener("click", importTaqseet2024);
+    }
+  }
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>{
+      navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+    });
+  }
+})();
+</script>
+</body>
+</html>
