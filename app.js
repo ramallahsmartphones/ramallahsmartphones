@@ -1,6 +1,55 @@
 (function(){
   "use strict";
 
+  // ---------- المظهر (نمط سامسونج One UI): فاتح / داكن / تلقائي + اللون الأساسي — يُحفظ على كل جهاز ----------
+  const UI_THEME_KEY = 'ui-theme', UI_ACCENT_KEY = 'ui-accent';
+  function uiGet(k, d){ try{ return localStorage.getItem(k) || d; }catch(e){ return d; } }
+  function applyUiTheme(){
+    const pref = uiGet(UI_THEME_KEY, 'auto');
+    const dark = pref === 'dark' || (pref === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const root = document.documentElement;
+    root.setAttribute('data-theme', dark ? 'dark' : 'light');
+    root.setAttribute('data-accent', uiGet(UI_ACCENT_KEY, 'blue'));
+    const m = document.querySelector('meta[name="theme-color"]');
+    if(m) m.setAttribute('content', dark ? '#000000' : '#f2f2f2');
+  }
+  applyUiTheme();
+  try{ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyUiTheme); }catch(e){}
+  function uiThemeCard(){
+    const t = uiGet(UI_THEME_KEY, 'auto'), a = uiGet(UI_ACCENT_KEY, 'blue');
+    const tb = (k, l) => '<button data-uitheme="' + k + '" class="' + (t === k ? 'on' : '') + '">' + l + '</button>';
+    const ab = (k, l) => '<button data-uiaccent="' + k + '" class="' + (a === k ? 'on' : '') + '">' + l + '</button>';
+    return '<div class="card"><div class="card-head"><h2>المظهر</h2></div>' +
+      '<div class="seg">' + tb('auto', 'تلقائي') + tb('light', 'فاتح') + tb('dark', 'داكن') + '</div>' +
+      '<p class="hint">«تلقائي» يتبع إعداد الهاتف. هذا الاختيار خاص بهذا الجهاز فقط.</p>' +
+      '<div class="card-head" style="margin-top:14px"><h2 style="font-size:15px">اللون الأساسي</h2></div>' +
+      '<div class="seg">' + ab('blue', 'أزرق') + ab('orange', 'برتقالي') + '</div></div>';
+  }
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest && e.target.closest('[data-uitheme],[data-uiaccent]');
+    if(!t) return;
+    try{
+      if(t.dataset.uitheme) localStorage.setItem(UI_THEME_KEY, t.dataset.uitheme);
+      if(t.dataset.uiaccent) localStorage.setItem(UI_ACCENT_KEY, t.dataset.uiaccent);
+    }catch(err){}
+    applyUiTheme(); render();
+  });
+  // على الهاتف: جداول العملاء/المبيعات/المقبوضات تُعرض كبطاقات (تسميات الأعمدة تُنسخ من رأس الجدول)
+  function decorateTables(){
+    if(!(currentTab === 'customers' || currentTab === 'purchases' || currentTab === 'payments')) return;
+    document.querySelectorAll('#tabContent table').forEach(tbl => {
+      const heads = Array.from(tbl.querySelectorAll('thead th')).map(th => (th.textContent || '').trim());
+      if(!heads.length) return;
+      tbl.classList.add('cardify');
+      tbl.querySelectorAll('tbody tr').forEach(tr => {
+        Array.from(tr.children).forEach((td, i) => {
+          const h = heads[i] || '';
+          if(h) td.setAttribute('data-label', h); else td.classList.add('act');
+        });
+      });
+    });
+  }
+
   const STORAGE_KEY = "ledger-data";
 
   let state = { customers: [], purchases: [], payments: [], history: [], accounts:[], supplierTx:[], inventory:[], cheques:[], suppliers:[], settings: { overdueDays: 45, currency: "₪", showCurrency: true, wrapCells: false } };
@@ -575,14 +624,14 @@
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
     ctx.fillStyle = '#16283f';
-    ctx.font = "bold 22px 'Noto Kufi Arabic', 'Cairo', Arial, sans-serif";
+    ctx.font = "bold 22px system-ui, 'Noto Sans Arabic', Arial, sans-serif";
     ctx.fillText(title, width-padding, padding+6);
     ctx.strokeStyle = '#ddd3ba';
     ctx.beginPath();
     ctx.moveTo(padding, padding+titleHeight-8);
     ctx.lineTo(width-padding, padding+titleHeight-8);
     ctx.stroke();
-    ctx.font = "15px 'Noto Kufi Arabic', 'Tajawal', Arial, sans-serif";
+    ctx.font = "15px system-ui, 'Noto Sans Arabic', Arial, sans-serif";
     ctx.fillStyle = '#1c2430';
     let y = padding + titleHeight;
     for(const line of lines){
@@ -1017,6 +1066,7 @@
 
     bindEvents(accounts);
     pagingButton();
+    decorateTables();
 
     // restore focus + cursor position (e.g. search boxes) after the re-render above
     if(activeId){
@@ -1225,7 +1275,7 @@
   // ---------- searchable pick-list: the value must be chosen from the list ----------
   function comboHTML(id, placeholder, value){
     return `<div style="position:relative"><input type="text" id="${id}" autocomplete="off" dir="auto" placeholder="${esc(placeholder)}" value="${esc(value||'')}">
-      <div id="${id}_list" style="display:none;position:absolute;top:100%;right:0;left:0;z-index:60;max-height:190px;overflow-y:auto;background:#2d333b;color:#adbac7;border:1px solid #545d68;border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.15);margin-top:2px"></div></div>`;
+      <div id="${id}_list" style="display:none;position:absolute;top:100%;right:0;left:0;z-index:60;max-height:190px;overflow-y:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.2);border-radius:8px;box-shadow:0 8px 20px rgba(0,0,0,.15);margin-top:2px"></div></div>`;
   }
   function attachCombo(id, names){
     const inp = document.getElementById(id), list = document.getElementById(id+'_list');
@@ -1236,8 +1286,8 @@
       const q = norm(inp.value);
       const hits = names.filter(n => !q || norm(n).includes(q)).slice(0,60);
       list.innerHTML = hits.length
-        ? hits.map(n=>`<div data-v="${esc(n)}" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid #444c56">${esc(n)}</div>`).join('')
-        : `<div style="padding:9px 12px;color:#768390">لا توجد نتائج — أضِفه أولاً من قائمته</div>`;
+        ? hits.map(n=>`<div data-v="${esc(n)}" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--line)">${esc(n)}</div>`).join('')
+        : `<div style="padding:9px 12px;color:var(--muted)">لا توجد نتائج — أضِفه أولاً من قائمته</div>`;
       list.style.display = 'block';
     };
     inp.addEventListener('focus', draw);
@@ -1278,8 +1328,8 @@
     const customerNames = customerNameList(editing && editing.customerName);
     const supplierNames = supplierNameList(editing && editing.supplier);
     const boxBase = 'border-radius:12px;padding:12px 14px 4px;margin:0 0 14px;';
-    const salesBox = boxBase + 'background:rgba(244,112,103,.10);border:2px solid #f47067;';
-    const buyBox = boxBase + 'background:rgba(118,131,144,.12);border:2px solid #636e7b;';
+    const salesBox = boxBase + 'background:var(--acbg);border:2px solid var(--ac);';
+    const buyBox = boxBase + 'background:var(--fill);border:2px solid var(--line);';
     const secTitle = (c)=>'font-weight:800;font-size:15px;margin:0 0 10px;color:' + c;
     const wrap = document.createElement("div");
     wrap.className = "overlay";
@@ -1287,7 +1337,7 @@
       <div class="modal" style="max-height:92vh;overflow-y:auto">
         <h3>${editing?'تعديل فاتورة مبيعات':'فاتورة مبيعات'}</h3>
         <div style="${salesBox}">
-        <div style="${secTitle('#f47067')}">فاتورة مبيعات</div>
+        <div style="${secTitle('var(--ac)')}">فاتورة مبيعات</div>
         <div class="grid2">
           <div class="field grow"><label>اسم العميل *</label>${comboHTML('pf_name','ابحث واختر العميل من القائمة',editing?editing.customerName:'')}</div>
           <div class="field"><label>تاريخ البيع *</label><input type="date" id="pf_date" lang="en-GB" dir="ltr" value="${editing?(editing.date||'').slice(0,10):new Date().toISOString().slice(0,10)}"></div>
@@ -1299,7 +1349,7 @@
         </div>
         </div>
         <div style="${buyBox}">
-        <div style="${secTitle('#adbac7')}">فاتورة مشتريات</div>
+        <div style="${secTitle('var(--ink)')}">فاتورة مشتريات</div>
         <div class="grid2">
           <div class="field grow"><label>المورّد</label>${comboHTML('pf_supplier','ابحث واختر المورّد من القائمة',editing?editing.supplier:'')}</div>
           <div class="field grow"><label>اسم المنتج</label><input type="text" id="pf_product" dir="auto" value="${editing?esc(editing.productName):''}" placeholder="مثال: Redmi 13C 256"></div>
@@ -1310,7 +1360,7 @@
         </div>
         <div class="grid2">
           <div class="field grow"><label>ملاحظات</label><input type="text" id="pf_notes" dir="auto" value="${editing?esc(editing.notes):''}"></div>
-          <div class="field"><label>الربح (تلقائي)</label><input type="number" id="pf_profit_display" value="${editing?((editing.price||0)-(editing.cost||0)):0}" disabled style="background:#373e47;color:var(--muted)"></div>
+          <div class="field"><label>الربح (تلقائي)</label><input type="number" id="pf_profit_display" value="${editing?((editing.price||0)-(editing.cost||0)):0}" disabled style="background:var(--fill);color:var(--muted)"></div>
         </div>
         <p class="hint">الربح = السعر − التكلفة. المبلغ المدفوع في فاتورة المبيعات يُسجَّل كسند قبض (يزيد الحساب)، والمبلغ المدفوع في فاتورة المشتريات يُسجَّل كسند صرف للمورّد (ينقص الحساب). العميل والمورّد يُختاران من القوائم المسجّلة فقط.</p>
         <div class="modal-actions">
@@ -2054,6 +2104,7 @@
   // ---------- settings ----------
   function renderSettings(){
     return `
+      ${uiThemeCard()}
       <div class="card">
         <div class="card-head"><h2>الإعدادات</h2></div>
         <div class="grid2">

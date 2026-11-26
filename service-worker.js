@@ -1,4 +1,4 @@
-const CACHE_NAME = "daftar-aqsat-v4-kufi";
+const CACHE_NAME = "daftar-aqsat-v5-oneui";
 const APP_SHELL = [
   "./",
   "./index.html",
