@@ -332,7 +332,7 @@ body:has(.home) .badge-warn{background:#ffd48a;color:#4a2c00;}
 .overlay.page{--pw:150px;display:block;overflow-y:auto;overscroll-behavior:contain;background:var(--bg);padding:18px 18px 60px;}
 .overlay.page > *{max-width:1440px;margin-inline:auto;}
 .overlay.page .page-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:0;padding:20px 6px 10px;color:var(--ink)!important;}
-.overlay.page .page-bar h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.2px;text-align:left;}
+.overlay.page .page-bar h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.2px;}
 .overlay.page .top-icon{background:var(--fill)!important;color:var(--ink)!important;}
 .overlay.page .modal{max-width:1440px!important;max-height:none!important;overflow:visible!important;border-radius:26px;box-shadow:none;padding:18px;}
 .overlay.page .modal::before{display:none!important;}
@@ -348,3 +348,17 @@ body:has(.home) .badge-warn{background:#ffd48a;color:#4a2c00;}
   .overlay.page .page-bar h1{font-size:24px;}
   .overlay.page .modal{padding:15px;}
 }
+
+/* ===== الإرشادات مخفية افتراضياً وتظهر بزر 🧠 ===== */
+.tip{display:none!important;}
+body.show-tips .tip{display:block!important;}
+.tips-btn{font-size:21px;line-height:1;}
+body.show-tips .tips-btn{background:var(--acbg)!important;box-shadow:0 0 0 2px var(--ac);}
+.overlay.page .page-bar .brand{display:flex;align-items:center;gap:12px;}
+/* رفع سطر سهم الرجوع واسم الصفحة قليلاً (الصفحات الداخلية فقط) */
+body:not(:has(.home)) .topbar{padding-top:10px;}
+.overlay.page .page-bar{padding-top:10px;}
+@media (max-width:760px){
+  body:not(:has(.home)) .topbar,.overlay.page .page-bar{min-height:0;padding-top:max(18px,calc(env(safe-area-inset-top,0px) + 8px));padding-bottom:8px;}
+}
+body.show-tips span.tip{display:inline!important;}

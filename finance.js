@@ -83,20 +83,20 @@ function vAcc(){const s=S(),un=s.payments.filter(p=>!p.accountId&&isCash(p));
   ${s.accounts.map(a=>`<tr><td class="name-cell">${E(a.name)}</td><td>${a.type==='bank'?'بنك':'صندوق'}</td><td class="num">${M(a.opening)}</td><td class="num">${M(accBal(a))}</td><td><button class="icon-btn" data-act="editAcc" data-id="${a.id}" title="تعديل">✎</button><button class="icon-btn" data-act="delAcc" data-id="${a.id}">✕</button></td></tr>`).join('')}
   </tbody><tfoot><tr><td style="font-weight:800">الإجمالي</td><td></td><td></td><td class="num" style="font-weight:800">${M(sum(s.accounts,accBal))}</td><td></td></tr></tfoot></table></div>`
   :'<div class="empty"><b>لا توجد حسابات</b>أضف صندوقاً أو حساباً بنكياً، ثم اختره عند تسجيل كل قبض.</div>'}
-  <p class="hint">مقبوضات بلا حساب محدد: ${un.length} (${M(sum(un,x=>x.amount))}) — لا تدخل في أرصدة الحسابات.</p></div>`;}
+  <p class="hint">مقبوضات بلا حساب محدد: ${un.length} (${M(sum(un,x=>x.amount))}) <span class="tip"> — لا تدخل في أرصدة الحسابات.</span></p></div>`;}
 
 function vInv(){const s=S(),free=s.purchases.filter(p=>!s.inventory.some(i=>i.purchaseId===p.id))
     .sort((x,y)=>(y.date||'').localeCompare(x.date||'')).slice(0,150);
   const opts=`<option value="">ربط ببيعة…</option>`+free.map(p=>`<option value="${p.id}">${E(p.customerName)} — ${E(p.productName||'')} — ${D(p.date)}</option>`).join('');
   const sups=supNames();
   return `<div class="card"><div class="card-head"><h2>المخزون</h2><button class="btn btn-primary btn-sm" data-act="addItem">+ جهاز</button></div>
-  <p class="hint">في المخزون: ${s.inventory.filter(i=>i.status!=='sold').length} جهاز · قيمته ${M(sum(s.inventory.filter(i=>i.status!=='sold'),i=>i.cost))}. ربط الجهاز ببيعة يضبط التكلفة والربح والمورّد فيها تلقائياً.</p>
+  <p class="hint">في المخزون: ${s.inventory.filter(i=>i.status!=='sold').length} جهاز · قيمته ${M(sum(s.inventory.filter(i=>i.status!=='sold'),i=>i.cost))}. <span class="tip">ربط الجهاز ببيعة يضبط التكلفة والربح والمورّد فيها تلقائياً.</span></p>
   ${s.inventory.length?`<div class="table-wrap"><table style="table-layout:auto"><thead><tr><th>الجهاز</th><th>IMEI</th><th>المورّد</th><th>التكلفة</th><th>الحالة</th><th></th></tr></thead><tbody>
   ${A().pgSlice('inv',s.inventory.slice().sort((x,y)=>(y.date||'').localeCompare(x.date||''))).map(i=>`<tr><td class="name-cell">${E(i.name)}</td><td class="muted">${E(i.imei)||'—'}</td><td>${E(i.supplier)||'—'}</td><td class="num">${M(i.cost)}</td>
   <td>${i.status==='sold'?'<span class="badge badge-ok">مباع</span>':`<select data-link="${i.id}">${opts}</select>`}</td><td><button class="icon-btn" data-act="delItem" data-id="${i.id}">✕</button></td></tr>`).join('')}
   </tbody></table></div>`:'<div class="empty"><b>المخزون فارغ</b></div>'}</div>
   <div class="card"><div class="card-head"><h2>فواتير المشتريات</h2><div class="row"><button class="btn btn-ghost btn-sm" data-act="addSupplier">+ مورد</button></div></div>
-  <p class="hint">كل فاتورة مبيعات جديدة تُنشئ هنا فاتورة مشتريات تلقائياً (المورد والتكلفة والمنتج والتاريخ من الفاتورة). عدّل الفواتير التلقائية من فاتورة المبيعات نفسها.</p>
+  <p class="hint tip">كل فاتورة مبيعات جديدة تُنشئ هنا فاتورة مشتريات تلقائياً (المورد والتكلفة والمنتج والتاريخ من الفاتورة). عدّل الفواتير التلقائية من فاتورة المبيعات نفسها.</p>
   ${s.supplierTx.filter(t=>t.type==='purchase').length?`<div class="table-wrap"><table style="table-layout:auto"><thead><tr><th>التاريخ</th><th>المورّد</th><th>المنتج</th><th>المبلغ</th><th>المصدر</th><th></th></tr></thead><tbody>
   ${s.supplierTx.filter(t=>t.type==='purchase').sort((x,y)=>(y.date||'').localeCompare(x.date||'')).slice(0,50).map(t=>`<tr><td class="muted">${D(t.date)}</td><td class="name-cell">${E(t.supplier)}</td><td dir="auto" style="white-space:normal">${E(t.notes)||'—'}</td><td class="num">${M(t.amount)}</td><td>${t.auto?'<span class="badge badge-ok">من فاتورة مبيعات</span>':'<span class="badge badge-muted">يدوي</span>'}</td><td><button class="icon-btn" data-act="editStx" data-id="${t.id}" title="تعديل">✎</button>${t.auto?'':`<button class="icon-btn" data-act="delStx" data-id="${t.id}">✕</button>`}</td></tr>`).join('')}
   </tbody></table></div>`:'<div class="empty"><b>لا توجد عمليات شراء</b></div>'}</div>
@@ -111,7 +111,7 @@ function vInv(){const s=S(),free=s.purchases.filter(p=>!s.inventory.some(i=>i.pu
 
 function vPlans(){const rows=planRows();
   return `<div class="card"><div class="card-head"><h2>جدولة الأقساط والتنبيهات</h2><button class="btn btn-primary btn-sm" data-act="addPlan">+ جدول لعملية بيع</button></div>
-  <p class="hint">المتأخر = ما استحق حتى اليوم (الدفعة الأولى + الأقساط المستحقة) ناقص كل مقبوضات العميل. العمليات بلا جدول تُعتبر مستحقة فوراً.</p>
+  <p class="hint tip">المتأخر = ما استحق حتى اليوم (الدفعة الأولى + الأقساط المستحقة) ناقص كل مقبوضات العميل. العمليات بلا جدول تُعتبر مستحقة فوراً.</p>
   ${rows.length?`<div class="table-wrap"><table style="table-layout:auto"><thead><tr><th>العميل</th><th>المتبقي</th><th>المتأخر</th><th>القسط القادم</th><th></th></tr></thead><tbody>
   ${A().pgSlice('plans',rows).map(r=>`<tr><td class="name-cell">${E(r.name)}</td><td class="num">${M(Math.max(0,r.bal))}</td><td class="num ${r.late>0?'debit':''}">${M(r.late)}</td><td>${r.next?D(r.next)+' · '+M(r.nextAmt):'—'}</td>
   <td>${r.late>0?`<button class="btn btn-ghost btn-sm" data-act="remind" data-cid="${E(r.id)}" data-name="${E(r.name)}" data-late="${r.late}">تذكير واتساب</button>`:''}</td></tr>`).join('')}
@@ -123,7 +123,7 @@ function vChq(){const s=S(),st={pending:['معلّق','badge-warn'],cashed:['م�
   ${A().pgSlice('chq',s.cheques.slice().sort((x,y)=>(x.dueDate||'').localeCompare(y.dueDate||''))).map(c=>`<tr><td class="name-cell">${E(chqName(c))}</td><td>${E(c.number)}</td><td>${E(c.bank)||'—'}</td><td class="num">${M(c.amount)}</td><td>${D(c.dueDate)}</td>
   <td><span class="badge ${st[c.status][1]}">${st[c.status][0]}</span></td><td>${c.status==='pending'?`<button class="btn btn-ghost btn-sm" data-act="chq" data-id="${c.id}" data-st="cashed">تحصيل</button> <button class="btn btn-ghost btn-sm" data-act="chq" data-id="${c.id}" data-st="returned">مرتجع</button>`:''}</td></tr>`).join('')}
   </tbody></table></div>`:'<div class="empty"><b>لا توجد شيكات</b></div>'}
-  <p class="hint">عند «تحصيل» يُنشأ قبض تلقائياً للعميل في الحساب المحدد.</p></div>`;}
+  <p class="hint tip">عند «تحصيل» يُنشأ قبض تلقائياً للعميل في الحساب المحدد.</p></div>`;}
 
 function vRep(){const s=S(),ag=aging(),tot=[0,1,2,3].map(i=>sum(ag,r=>r.bk[i]));
   const recv=sum(ag,r=>r.t),invV=sum(s.inventory.filter(i=>i.status!=='sold'),i=>i.cost),cash=sum(s.accounts,accBal),pay=sum(supNames(),supBal);
