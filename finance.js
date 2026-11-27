@@ -18,6 +18,7 @@ function form(title,fields,onSave){
       ?`<select id="x_${f.id}">${f.options.map(o=>`<option value="${E(o[0])}" ${String(f.value)===String(o[0])?'selected':''}>${E(o[1])}</option>`).join('')}</select>`
       :`<input id="x_${f.id}" type="${f.type==='number'?'text':(f.type||'text')}"${f.type==='number'?' inputmode="decimal" dir="ltr"':''} value="${E(f.value==null?'':f.value)}">`}</div>`).join('')}</div>
     <div class="modal-actions"><button class="btn btn-ghost" data-x="c">إلغاء</button><button class="btn btn-primary" data-x="s">حفظ</button></div></div>`;
+  A().pageify(w);
   document.body.appendChild(w);
   w.addEventListener('click',e=>{
     if(e.target===w||e.target.dataset.x==='c') w.remove();

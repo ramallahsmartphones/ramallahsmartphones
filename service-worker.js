@@ -1,4 +1,4 @@
-const CACHE_NAME = "daftar-aqsat-v6-icons";
+const CACHE_NAME = "daftar-aqsat-v7-pages";
 const APP_SHELL = [
   "./",
   "./index.html",

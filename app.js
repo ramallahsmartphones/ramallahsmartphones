@@ -1158,6 +1158,7 @@
           <button class="btn btn-primary" id="saveBtn">${editing?'حفظ التعديلات':'إضافة'}</button>
         </div>
       </div>`;
+    pageify(wrap);
     document.body.appendChild(wrap);
     wrap.addEventListener("click",(e)=>{ if(e.target===wrap) document.body.removeChild(wrap); });
     document.getElementById("cancelBtn").addEventListener("click", ()=>document.body.removeChild(wrap));
@@ -1359,6 +1360,7 @@
           <button class="btn btn-primary" id="saveBtn">${editing?'حفظ التعديلات':'إضافة'}</button>
         </div>
       </div>`;
+    pageify(wrap);
     document.body.appendChild(wrap);
     const custCombo = attachCombo('pf_name', customerNames);
     const supCombo = attachCombo('pf_supplier', supplierNames);
@@ -1550,6 +1552,7 @@
           <button class="btn btn-primary" id="saveBtn">${editing?'حفظ التعديلات':'إضافة'}</button>
         </div>
       </div>`;
+    pageify(wrap);
     document.body.appendChild(wrap);
     wrap.addEventListener("click",(e)=>{ if(e.target===wrap) document.body.removeChild(wrap); });
     document.getElementById("cancelBtn").addEventListener("click", ()=>document.body.removeChild(wrap));
@@ -2443,7 +2446,7 @@
     customers:    { label:'العملاء', icon:'users', tab:'customers', staff:true },
     purchases:    { label:'المبيعات', icon:'cart', tab:'purchases', staff:true },
     payments:     { label:'المقبوضات', icon:'receive', tab:'payments', staff:true },
-    statements:   { label:'كشوف الحسابات', icon:'statement', tab:'reports', sub:'statements' },
+    statements:   { label:'كشف الحساب', icon:'statement', tab:'reports', sub:'statements' },
     plans:        { label:'الأقساط', icon:'calendar', tab:'finance', sub:'plans' },
     addCustomer:  { label:'إضافة عميل', icon:'userPlus', staff:true, run:()=>openCustomerModal(null) },
     addSale:      { label:'فاتورة مبيعات', icon:'cart', staff:true, run:()=>openPurchaseModal(null) },
@@ -2463,7 +2466,7 @@
     trash:        { label:'سلة المحذوفات', icon:'trash', run:()=>openTrashModal() },
   };
   // لتغيير ترتيب الأيقونات أو مجموعاتها يكفي تعديل هذه القائمة
-  const NAV_PILLS = ['addSale','addReceipt'];
+  const NAV_PILLS = ['addReceipt','statements','addSale','addPurchase'];
   const NAV_GROUPS = [
     { title:'العملاء والمبيعات',   items:['customers','purchases','payments','statements','plans','addCustomer'] },
     { title:'المشتريات والموردون', items:['inv','addPurchase','addSupPay','addSupplier'] },
@@ -2486,9 +2489,9 @@
     return '<div class="home">' +
       '<div class="qs-pills">' + NAV_PILLS.filter(navAllowed).map(k=>navButton(k,'qs-pill')).join('') + '</div>' +
       '<div class="qs-groups">' + NAV_GROUPS.map(g=>{
-        const items = g.items.filter(navAllowed);
+        const items = g.items.filter(k=>navAllowed(k) && NAV_PILLS.indexOf(k) < 0);
         if(!items.length) return '';
-        return '<section class="qs-panel"><h2>' + g.title + '</h2><div class="qs-grid">' + items.map(k=>navButton(k,'qs-tile')).join('') + '</div></section>';
+        return '<section class="qs-panel"><div class="qs-grid">' + items.map(k=>navButton(k,'qs-tile')).join('') + '</div></section>';
       }).join('') + '</div></div>';
   }
   // أعلى كل صفحة: أيقونات الصفحات المرتبطة بها للتنقل السريع بينها
@@ -2511,6 +2514,19 @@
     const it = NAV_ITEMS[activeNavKey()];
     return '<div class="topbar"><div class="brand"><button type="button" class="top-icon" data-nav="home" aria-label="رجوع">' + icon('back') + '</button>' +
       '<div class="brand-text"><h1>' + (it ? it.label : 'مكة للهواتف الذكية') + '</h1>' + staff + '</div></div></div>';
+  }
+  // ---------- صفحات الإضافات: تُعرض كصفحة كاملة منفصلة (بسهم رجوع للرئيسية) بدل نافذة منبثقة ----------
+  function pageify(wrap){
+    wrap.classList.add('page');
+    const modal = wrap.querySelector('.modal'); if(!modal) return;
+    const h3 = modal.querySelector('h3'), title = h3 ? h3.textContent.trim() : '';
+    if(h3) h3.remove();
+    const bar = document.createElement('div'); bar.className = 'topbar page-bar';
+    bar.innerHTML = '<button type="button" class="top-icon" aria-label="رجوع">' + icon('back') + '</button><h1>' + esc(title) + '</h1>';
+    bar.querySelector('button').addEventListener('click', ()=>wrap.remove());
+    wrap.insertBefore(bar, modal);
+    // الضغط على الخلفية الفارغة لا يغلق الصفحة (حتى لا تضيع البيانات المدخلة)
+    wrap.addEventListener('click', (e)=>{ if(e.target === wrap) e.stopImmediatePropagation(); }, true);
   }
   const inPageEntry = () => !!(history.state && history.state.mkPage);
   function navRun(k){
@@ -2899,7 +2915,7 @@
     }
   }
 
-  window.AppAPI = { pgSlice, pgReset: ()=>{ Object.keys(pgLimits).forEach(k=>delete pgLimits[k]); }, isCashReceipt, get state(){return state;}, save:saveData, render, money, esc, fmtDate, uid, toast:showToast, logHistory, computeAccounts, allCustomerNames };
+  window.AppAPI = { pageify, pgSlice, pgReset: ()=>{ Object.keys(pgLimits).forEach(k=>delete pgLimits[k]); }, isCashReceipt, get state(){return state;}, save:saveData, render, money, esc, fmtDate, uid, toast:showToast, logHistory, computeAccounts, allCustomerNames };
 
   if('serviceWorker' in navigator){
     window.addEventListener('load', ()=>{
