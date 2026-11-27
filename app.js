@@ -21,7 +21,7 @@
     const ab = (k, l) => '<button data-uiaccent="' + k + '" class="' + (a === k ? 'on' : '') + '">' + l + '</button>';
     return '<div class="card"><div class="card-head"><h2>المظهر</h2></div>' +
       '<div class="seg">' + tb('auto', 'تلقائي') + tb('light', 'فاتح') + tb('dark', 'داكن') + '</div>' +
-      '<p class="hint">«تلقائي» يتبع إعداد الهاتف. هذا الاختيار خاص بهذا الجهاز فقط.</p>' +
+      '<p class="hint tip">«تلقائي» يتبع إعداد الهاتف. هذا الاختيار خاص بهذا الجهاز فقط.</p>' +
       '<div class="card-head" style="margin-top:14px"><h2 style="font-size:15px">اللون الأساسي</h2></div>' +
       '<div class="seg">' + ab('blue', 'أزرق') + ab('orange', 'برتقالي') + '</div></div>';
   }
@@ -998,10 +998,10 @@
             <option value="no" ${!state.settings.wrapCells?'selected':''}>عرض في سطر واحد مع قص الزائد (…)</option>
             <option value="yes" ${state.settings.wrapCells?'selected':''}>التفاف النص وعرضه كاملاً على عدة أسطر</option>
           </select>
-          <div class="hint">يُطبَّق تلقائياً على جميع الجداول في كل الشاشات (العملاء، المبيعات، المقبوضات، التقارير...).</div>
+          <div class="hint tip">يُطبَّق تلقائياً على جميع الجداول في كل الشاشات (العملاء، المبيعات، المقبوضات، التقارير...).</div>
         </div>
         <div class="card-head" style="margin-bottom:10px"><h2 style="font-size:14.5px">التحكم بعرض الأعمدة</h2></div>
-        <p class="hint" style="margin-bottom:12px">إخفاء أو إظهار أي عمود يُطبَّق تلقائياً على كل الشاشات التي تحتوي على نفس العمود.</p>
+        <p class="hint tip" style="margin-bottom:12px">إخفاء أو إظهار أي عمود يُطبَّق تلقائياً على كل الشاشات التي تحتوي على نفس العمود.</p>
         <div class="grid2">
           ${COLUMN_FIELDS.map(f=>`
             <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;cursor:pointer">
@@ -1052,7 +1052,6 @@
     else if(currentTab==="payments") content.innerHTML = renderPayments();
     else if(currentTab==="finance") content.innerHTML = window.Ext.render();
     else content.innerHTML = renderReports(accounts);
-    if(!isHome) content.insertAdjacentHTML('afterbegin', siblingNav());
     appEl.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click', ()=>navRun(b.dataset.nav)));
 
     bindEvents(accounts);
@@ -1158,6 +1157,7 @@
           <button class="btn btn-primary" id="saveBtn">${editing?'حفظ التعديلات':'إضافة'}</button>
         </div>
       </div>`;
+    pageify(wrap);
     document.body.appendChild(wrap);
     wrap.addEventListener("click",(e)=>{ if(e.target===wrap) document.body.removeChild(wrap); });
     document.getElementById("cancelBtn").addEventListener("click", ()=>document.body.removeChild(wrap));
@@ -1353,12 +1353,13 @@
           <div class="field grow"><label>ملاحظات</label><input type="text" id="pf_notes" dir="auto" value="${editing?esc(editing.notes):''}"></div>
           <div class="field"><label>الربح (تلقائي)</label><input type="number" id="pf_profit_display" value="${editing?((editing.price||0)-(editing.cost||0)):0}" disabled style="background:var(--fill);color:var(--muted)"></div>
         </div>
-        <p class="hint">الربح = السعر − التكلفة. المبلغ المدفوع في فاتورة المبيعات يُسجَّل كسند قبض (يزيد الحساب)، والمبلغ المدفوع في فاتورة المشتريات يُسجَّل كسند صرف للمورّد (ينقص الحساب). العميل والمورّد يُختاران من القوائم المسجّلة فقط.</p>
+        <p class="hint tip">الربح = السعر − التكلفة. المبلغ المدفوع في فاتورة المبيعات يُسجَّل كسند قبض (يزيد الحساب)، والمبلغ المدفوع في فاتورة المشتريات يُسجَّل كسند صرف للمورّد (ينقص الحساب). العميل والمورّد يُختاران من القوائم المسجّلة فقط.</p>
         <div class="modal-actions">
           <button class="btn btn-ghost" id="cancelBtn">إلغاء</button>
           <button class="btn btn-primary" id="saveBtn">${editing?'حفظ التعديلات':'إضافة'}</button>
         </div>
       </div>`;
+    pageify(wrap);
     document.body.appendChild(wrap);
     const custCombo = attachCombo('pf_name', customerNames);
     const supCombo = attachCombo('pf_supplier', supplierNames);
@@ -1550,6 +1551,7 @@
           <button class="btn btn-primary" id="saveBtn">${editing?'حفظ التعديلات':'إضافة'}</button>
         </div>
       </div>`;
+    pageify(wrap);
     document.body.appendChild(wrap);
     wrap.addEventListener("click",(e)=>{ if(e.target===wrap) document.body.removeChild(wrap); });
     document.getElementById("cancelBtn").addEventListener("click", ()=>document.body.removeChild(wrap));
@@ -1742,7 +1744,7 @@
     return `
       <div class="card">
         <div class="card-head"><h2>قائمة دخل</h2></div>
-        <p class="hint">${hasPassword ? 'هذه الشاشة محمية بكلمة مرور إضافية منفصلة عن كلمة مرور الحساب.' : 'لم يتم تعيين كلمة مرور لهذه الشاشة بعد. أنشئ واحدة الآن للمتابعة.'}</p>
+        <p class="hint tip">${hasPassword ? 'هذه الشاشة محمية بكلمة مرور إضافية منفصلة عن كلمة مرور الحساب.' : 'لم يتم تعيين كلمة مرور لهذه الشاشة بعد. أنشئ واحدة الآن للمتابعة.'}</p>
         <div class="field" style="max-width:280px;margin-bottom:12px">
           <label>${hasPassword ? 'كلمة المرور' : 'كلمة مرور جديدة'}</label>
           <input type="password" id="incomeListPassInput">
@@ -1832,7 +1834,7 @@
           ${hasFilter ? `<div class="field"><label>&nbsp;</label><button class="btn-clear-blue" id="statClearFilterBtn">إلغاء الفلترة</button></div>` : ''}
         </div>
         <p class="hint">${list.length} عميل ضمن هذه الفلترة</p>
-        <p class="hint">اضغط على أي عميل لعرض كل عملياته بالتفصيل.</p>
+        <p class="hint tip">اضغط على أي عميل لعرض كل عملياته بالتفصيل.</p>
         ${list.length===0?emptyState('لا يوجد عملاء ضمن هذا الفلتر',''):pgSlice('statements', list).map(c=>customerCard(c)).join('')}
       </div>
       ${datalistNames('customerNamesList')}
@@ -2054,11 +2056,11 @@
     return `
       <div class="card">
         <div class="card-head"><h2>أرشيف التعديلات</h2></div>
-        <p class="hint">سجل كامل لكل إضافة أو تعديل أو حذف على العملاء والمبيعات والمقبوضات، مع بيان القيمة قبل التعديل وبعده.</p>
+        <p class="hint tip">سجل كامل لكل إضافة أو تعديل أو حذف على العملاء والمبيعات والمقبوضات، مع بيان القيمة قبل التعديل وبعده.</p>
         ${monthYearFilterRow('hist', historyFilter, customerNames, years, true)}
         <p class="hint">${pgInfo.total} حركة ضمن هذه الفلترة</p>
         ${rows.length===0?emptyState('لا يوجد سجل تعديلات ضمن هذه الفلترة',''):`
-        <p class="hint" style="margin-bottom:8px">اسحب أي صف يميناً/يساراً لقراءة كامل التفاصيل عند تجاوزها ثلاثة أسطر.</p>
+        <p class="hint tip" style="margin-bottom:8px">اسحب أي صف يميناً/يساراً لقراءة كامل التفاصيل عند تجاوزها ثلاثة أسطر.</p>
         <div class="table-wrap">
         <table style="table-layout:auto;min-width:640px">
           <colgroup><col style="width:130px"><col style="width:110px"><col style="width:90px"><col style="width:80px"><col style="min-width:260px"></colgroup>
@@ -2088,7 +2090,7 @@
           <div class="field">
             <label>عدد الأيام لاعتبار العميل متأخراً</label>
             <input type="number" id="overdueDaysInput" value="${state.settings.overdueDays}" min="1">
-            <div class="hint">إذا مرّت هذه المدة دون أي حركة وكان على العميل مبلغ مستحق، يُصنَّف كـ"متأخر".</div>
+            <div class="hint tip">إذا مرّت هذه المدة دون أي حركة وكان على العميل مبلغ مستحق، يُصنَّف كـ"متأخر".</div>
           </div>
           <div class="field"><label>رمز العملة</label><input type="text" id="currencyInput" value="${esc(state.settings.currency)}" maxlength="4"></div>
           <div class="field">
@@ -2107,7 +2109,7 @@
       <div class="card">
         <div class="card-head"><h2>الحساب</h2></div>
         <p class="hint">مسجّل دخول حالياً بالبريد: <b style="color:var(--ink)">${esc(fbAuth.currentUser?fbAuth.currentUser.email:'—')}</b></p>
-        <p class="hint">بياناتك متزامنة تلقائياً مع هذا الحساب — يمكنك تسجيل الدخول به من أي جهاز أو متصفح وستجد نفس البيانات فوراً.</p>
+        <p class="hint tip">بياناتك متزامنة تلقائياً مع هذا الحساب — يمكنك تسجيل الدخول به من أي جهاز أو متصفح وستجد نفس البيانات فوراً.</p>
         <div class="row">
           
           <button class="btn btn-ghost" id="signOutBtn">تسجيل الخروج</button>          <button class="btn btn-ghost" id="linkGoogleBtn">ربط حساب Google بهذا الحساب</button>
@@ -2115,17 +2117,17 @@
       </div>
       <div class="card">
         <div class="card-head"><h2>طريقة الدخول</h2></div>
-        <p class="hint">الدخول بحساب Google فقط. للتحقق من هويتك عبر بصمة الوجه/الإصبع أو الرقم السري على الهاتف: فعّل <b>مفاتيح المرور (Passkeys)</b> في حسابك من g.co/passkeys. ولتصلك رسالة «هل أنت من دخل؟» فعّل <b>التحقق بخطوتين</b> مع «رسائل Google».</p>
-        <p class="hint">قبل إلغاء الدخول بالبريد وكلمة المرور من Firebase، اضغط «ربط حساب Google بهذا الحساب» في بطاقة الحساب أعلاه ليدخل Google إلى بياناتك نفسها.</p>
+        <p class="hint tip">الدخول بحساب Google فقط. للتحقق من هويتك عبر بصمة الوجه/الإصبع أو الرقم السري على الهاتف: فعّل <b>مفاتيح المرور (Passkeys)</b> في حسابك من g.co/passkeys. ولتصلك رسالة «هل أنت من دخل؟» فعّل <b>التحقق بخطوتين</b> مع «رسائل Google».</p>
+        <p class="hint tip">قبل إلغاء الدخول بالبريد وكلمة المرور من Firebase، اضغط «ربط حساب Google بهذا الحساب» في بطاقة الحساب أعلاه ليدخل Google إلى بياناتك نفسها.</p>
       </div>
       <div class="card">
         <div class="card-head"><h2>قائمة دخل</h2></div>
-        <p class="hint">${state.settings.incomeListPassword ? 'محمية حالياً بكلمة مرور.' : 'لم تُعيَّن كلمة مرور بعد — سيُطلب منك إنشاء واحدة عند أول دخول للشاشة.'}</p>
+        <p class="hint tip">${state.settings.incomeListPassword ? 'محمية حالياً بكلمة مرور.' : 'لم تُعيَّن كلمة مرور بعد — سيُطلب منك إنشاء واحدة عند أول دخول للشاشة.'}</p>
         ${state.settings.incomeListPassword ? `<div class="row"><button class="btn btn-ghost" id="resetIncomeListPassBtn">إعادة تعيين كلمة المرور</button></div>` : ''}
       </div>
       <div class="card">
         <div class="card-head"><h2>نسخ احتياطي</h2></div>
-        <p class="hint">تنزيل نسخة من كل بياناتك كملف JSON. ننصح بأخذ نسخة بشكل دوري كضمان إضافي، أو لنقل البيانات لجهاز آخر.</p>
+        <p class="hint tip">تنزيل نسخة من كل بياناتك كملف JSON. ننصح بأخذ نسخة بشكل دوري كضمان إضافي، أو لنقل البيانات لجهاز آخر.</p>
         <div class="row">
           <button class="btn btn-ghost" id="exportBtn">تنزيل نسخة احتياطية</button>
           <button class="btn btn-ghost" id="restoreBtn">استعادة من نسخة احتياطية</button>
@@ -2135,7 +2137,7 @@
       </div>
       <div class="card">
         <div class="card-head"><h2>استيراد ذمم دفتر ٢٠٢٤ (تقسيط)</h2></div>
-        <p class="hint">استيراد لمرة واحدة لجميع العملاء الذين بقي عليهم رصيد مستحق من صفحة "تقسيط" في ملف إكسل ٢٠٢٤
+        <p class="hint tip">استيراد لمرة واحدة لجميع العملاء الذين بقي عليهم رصيد مستحق من صفحة "تقسيط" في ملف إكسل ٢٠٢٤
         (295 حركة تخص 37 عميلاً، بإجمالي رصيد مستحق قدره تقريباً 68,999).</p>
         <div class="row">
           <button class="btn btn-primary" id="importTaqseetBtn" ${state.settings.importedTaqseet2024?'disabled':''}>
@@ -2145,7 +2147,7 @@
       </div>
       <div class="card">
         <div class="card-head"><h2>استيراد الذمم القديمة (ما قبل 2023)</h2></div>
-        <p class="hint">استيراد لمرة واحدة لجميع الحركات القديمة من ملف "الذمم القديمة" (سنوات 2018–2023).
+        <p class="hint tip">استيراد لمرة واحدة لجميع الحركات القديمة من ملف "الذمم القديمة" (سنوات 2018–2023).
         سيُضاف لكل اسم عميل في هذا الملف عبارة "- ما قبل 2023" لتمييزه عن أي عميل بنفس الاسم في الدفاتر الأخرى، حتى لو تشابه الاسم.
         (336 حركة تخص 54 عميلاً).</p>
         <div class="row">
@@ -2167,8 +2169,8 @@
     wrap.className = "overlay";
     wrap.innerHTML = `
       <div class="modal" style="max-width:420px">
-        <h3>تفعيل المصادقة الثنائية</h3>
-        <p class="hint">افتح تطبيق المصادقة على هاتفك (Google Authenticator، Microsoft Authenticator، أو Authy) واختر "إضافة حساب" ثم "إدخال المفتاح يدوياً"، وأدخل المفتاح التالي:</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px"><h3 style="margin:0">تفعيل المصادقة الثنائية</h3>${TIPS_BTN}</div>
+        <p class="hint tip">افتح تطبيق المصادقة على هاتفك (Google Authenticator، Microsoft Authenticator، أو Authy) واختر "إضافة حساب" ثم "إدخال المفتاح يدوياً"، وأدخل المفتاح التالي:</p>
         <div class="field" style="margin-bottom:10px">
           <label>المفتاح السري</label>
           <input type="text" readonly value="${secret}" style="font-family:monospace;letter-spacing:1px" onclick="this.select()">
@@ -2207,8 +2209,8 @@
     wrap.className = "overlay";
     wrap.innerHTML = `
       <div class="modal" style="max-width:360px">
-        <h3>تعطيل المصادقة الثنائية</h3>
-        <p class="hint">لتأكيد التعطيل، أدخل الرمز الحالي من تطبيق المصادقة.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px"><h3 style="margin:0">تعطيل المصادقة الثنائية</h3>${TIPS_BTN}</div>
+        <p class="hint tip">لتأكيد التعطيل، أدخل الرمز الحالي من تطبيق المصادقة.</p>
         <div class="field" style="max-width:220px;margin:14px 0">
           <label>رمز التحقق</label>
           <input type="text" id="totpDisableCode" maxlength="6" inputmode="numeric" dir="ltr" style="text-align:center;letter-spacing:4px;font-size:18px">
@@ -2347,7 +2349,7 @@
           <button class="btn btn-primary" id="saveLockBtn">حفظ</button>
           <button class="btn btn-ghost" id="staffModeBtn">تفعيل وضع الموظف على هذا الجهاز</button>
         </div>
-        <p class="hint">وضع الموظف يخفي التكلفة والربح والمورّد والتقارير والمالية وأزرار الحذف، ولا يُخرَج منه إلا بكلمة مرور حساب المالك.</p>
+        <p class="hint tip">وضع الموظف يخفي التكلفة والربح والمورّد والتقارير والمالية وأزرار الحذف، ولا يُخرَج منه إلا بكلمة مرور حساب المالك.</p>
       </div>`;
   }
   /*CTRL_END*/
@@ -2443,7 +2445,7 @@
     customers:    { label:'العملاء', icon:'users', tab:'customers', staff:true },
     purchases:    { label:'المبيعات', icon:'cart', tab:'purchases', staff:true },
     payments:     { label:'المقبوضات', icon:'receive', tab:'payments', staff:true },
-    statements:   { label:'كشوف الحسابات', icon:'statement', tab:'reports', sub:'statements' },
+    statements:   { label:'كشف الحساب', icon:'statement', tab:'reports', sub:'statements' },
     plans:        { label:'الأقساط', icon:'calendar', tab:'finance', sub:'plans' },
     addCustomer:  { label:'إضافة عميل', icon:'userPlus', staff:true, run:()=>openCustomerModal(null) },
     addSale:      { label:'فاتورة مبيعات', icon:'cart', staff:true, run:()=>openPurchaseModal(null) },
@@ -2463,7 +2465,7 @@
     trash:        { label:'سلة المحذوفات', icon:'trash', run:()=>openTrashModal() },
   };
   // لتغيير ترتيب الأيقونات أو مجموعاتها يكفي تعديل هذه القائمة
-  const NAV_PILLS = ['addSale','addReceipt'];
+  const NAV_PILLS = ['addReceipt','statements','addSale','addPurchase'];
   const NAV_GROUPS = [
     { title:'العملاء والمبيعات',   items:['customers','purchases','payments','statements','plans','addCustomer'] },
     { title:'المشتريات والموردون', items:['inv','addPurchase','addSupPay','addSupplier'] },
@@ -2486,9 +2488,9 @@
     return '<div class="home">' +
       '<div class="qs-pills">' + NAV_PILLS.filter(navAllowed).map(k=>navButton(k,'qs-pill')).join('') + '</div>' +
       '<div class="qs-groups">' + NAV_GROUPS.map(g=>{
-        const items = g.items.filter(navAllowed);
+        const items = g.items.filter(k=>navAllowed(k) && NAV_PILLS.indexOf(k) < 0);
         if(!items.length) return '';
-        return '<section class="qs-panel"><h2>' + g.title + '</h2><div class="qs-grid">' + items.map(k=>navButton(k,'qs-tile')).join('') + '</div></section>';
+        return '<section class="qs-panel"><div class="qs-grid">' + items.map(k=>navButton(k,'qs-tile')).join('') + '</div></section>';
       }).join('') + '</div></div>';
   }
   // أعلى كل صفحة: أيقونات الصفحات المرتبطة بها للتنقل السريع بينها
@@ -2500,6 +2502,8 @@
     if(items.length < 2) return '';
     return '<nav class="qs-strip">' + items.map(k=>navButton(k,'qs-tile')).join('') + '</nav>';
   }
+  const TIPS_BTN = '<button type="button" class="top-icon tips-btn" data-tips aria-label="الإرشادات" title="الإرشادات">🧠</button>';
+  document.addEventListener('click', (e)=>{ if(e.target.closest && e.target.closest('[data-tips]')) document.body.classList.toggle('show-tips'); });
   function topbarHtml(){
     const staff = isStaff() ? '<span class="badge badge-warn" id="exitStaffBtn" style="cursor:pointer">وضع الموظف — اضغط للخروج</span>' : '';
     if(currentTab === 'home'){
@@ -2510,7 +2514,20 @@
     }
     const it = NAV_ITEMS[activeNavKey()];
     return '<div class="topbar"><div class="brand"><button type="button" class="top-icon" data-nav="home" aria-label="رجوع">' + icon('back') + '</button>' +
-      '<div class="brand-text"><h1>' + (it ? it.label : 'مكة للهواتف الذكية') + '</h1>' + staff + '</div></div></div>';
+      '<div class="brand-text"><h1>' + (it ? it.label : 'مكة للهواتف الذكية') + '</h1>' + staff + '</div></div>' + TIPS_BTN + '</div>';
+  }
+  // ---------- صفحات الإضافات: تُعرض كصفحة كاملة منفصلة (بسهم رجوع للرئيسية) بدل نافذة منبثقة ----------
+  function pageify(wrap){
+    wrap.classList.add('page');
+    const modal = wrap.querySelector('.modal'); if(!modal) return;
+    const h3 = modal.querySelector('h3'), title = h3 ? h3.textContent.trim() : '';
+    if(h3) h3.remove();
+    const bar = document.createElement('div'); bar.className = 'topbar page-bar';
+    bar.innerHTML = '<div class="brand"><button type="button" class="top-icon" data-pageback aria-label="رجوع">' + icon('back') + '</button><h1>' + esc(title) + '</h1></div>' + TIPS_BTN;
+    bar.querySelector('[data-pageback]').addEventListener('click', ()=>wrap.remove());
+    wrap.insertBefore(bar, modal);
+    // الضغط على الخلفية الفارغة لا يغلق الصفحة (حتى لا تضيع البيانات المدخلة)
+    wrap.addEventListener('click', (e)=>{ if(e.target === wrap) e.stopImmediatePropagation(); }, true);
   }
   const inPageEntry = () => !!(history.state && history.state.mkPage);
   function navRun(k){
@@ -2587,7 +2604,7 @@
         <div class="card-head"><h2>تثبيت التطبيق على الهاتف</h2></div>
         ${isStandalone()
           ? '<p class="hint">التطبيق مثبّت ويعمل الآن كتطبيق مستقل على جهازك ✓</p>'
-          : '<p class="hint">ثبّت البرنامج على شاشة هاتفك ليفتح كتطبيق مستقل بأيقونة خاصة وبملء الشاشة، ويعمل حتى مع ضعف الإنترنت.</p><div class="row"><button class="btn btn-primary" id="installAppBtn">📱 تثبيت التطبيق على هذا الجهاز</button></div>'}
+          : '<p class="hint tip">ثبّت البرنامج على شاشة هاتفك ليفتح كتطبيق مستقل بأيقونة خاصة وبملء الشاشة، ويعمل حتى مع ضعف الإنترنت.</p><div class="row"><button class="btn btn-primary" id="installAppBtn">📱 تثبيت التطبيق على هذا الجهاز</button></div>'}
       </div>`;
   }
   // ---------- restore from a backup file: adds what is missing (optionally also overwrites differing records); NEVER deletes ----------
@@ -2623,8 +2640,8 @@
     const wrap = document.createElement('div'); wrap.className = 'overlay';
     wrap.innerHTML = `
       <div class="modal" style="max-width:520px">
-        <h3>استعادة من نسخة احتياطية</h3>
-        <p class="hint">لن يُحذف أي شيء من بياناتك الحالية. السجلات غير الموجودة حالياً تُضاف.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px"><h3 style="margin:0">استعادة من نسخة احتياطية</h3>${TIPS_BTN}</div>
+        <p class="hint tip">لن يُحذف أي شيء من بياناتك الحالية. السجلات غير الموجودة حالياً تُضاف.</p>
         <div class="table-wrap"><table style="table-layout:auto"><thead><tr><th>القسم</th><th>في الملف</th><th>سيُضاف</th><th>يختلف عن الحالي</th></tr></thead><tbody>
         ${rows.map(r=>`<tr><td class="name-cell">${esc(r.label)}</td><td class="num">${r.total}</td><td class="num" style="${r.add.length?'color:var(--ok);font-weight:800':''}">${r.add.length}</td><td class="num">${r.diff.length}</td></tr>`).join('')}
         </tbody></table></div>
@@ -2663,8 +2680,8 @@
       const items = (state.history || []).filter(h=>h.action === 'delete' && TRASH_MAP[h.entityType] && h.before).sort((a,b)=>(b.at||'').localeCompare(a.at||'')).slice(0, 100);
       wrap.innerHTML = `
         <div class="modal" style="max-width:640px">
-          <h3>سلة المحذوفات</h3>
-          <p class="hint">آخر ما حُذف من العملاء والفواتير والسندات. يحتفظ البرنامج بآخر 2000 حركة فقط.</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px"><h3 style="margin:0">سلة المحذوفات</h3>${TIPS_BTN}</div>
+          <p class="hint tip">آخر ما حُذف من العملاء والفواتير والسندات. يحتفظ البرنامج بآخر 2000 حركة فقط.</p>
           ${items.length ? `<div class="table-wrap"><table style="table-layout:auto"><thead><tr><th>وقت الحذف</th><th>النوع</th><th>التفاصيل</th><th></th></tr></thead><tbody>
           ${items.map(h=>{ const b = h.before, what = [b.customerName || b.name, b.productName, (b.price != null ? b.price : (b.amount != null ? b.amount : ''))].filter(x=>x !== '' && x != null).join(' — ');
             return `<tr><td class="muted" style="font-size:12px;white-space:normal">${fmtDateTime(h.at)}</td><td>${TRASH_MAP[h.entityType][1]}</td><td dir="auto" style="white-space:normal">${esc(what)}</td>
@@ -2899,7 +2916,7 @@
     }
   }
 
-  window.AppAPI = { pgSlice, pgReset: ()=>{ Object.keys(pgLimits).forEach(k=>delete pgLimits[k]); }, isCashReceipt, get state(){return state;}, save:saveData, render, money, esc, fmtDate, uid, toast:showToast, logHistory, computeAccounts, allCustomerNames };
+  window.AppAPI = { pageify, pgSlice, pgReset: ()=>{ Object.keys(pgLimits).forEach(k=>delete pgLimits[k]); }, isCashReceipt, get state(){return state;}, save:saveData, render, money, esc, fmtDate, uid, toast:showToast, logHistory, computeAccounts, allCustomerNames };
 
   if('serviceWorker' in navigator){
     window.addEventListener('load', ()=>{

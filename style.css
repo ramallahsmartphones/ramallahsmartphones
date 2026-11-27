@@ -275,7 +275,7 @@ body:has(.home) .top-icon{background:rgba(255,255,255,.16);color:#fff;}
 .qs-circle svg{width:28px;height:28px;}
 
 /* الحبّتان العلويتان (العمليات الأكثر استخداماً) */
-.qs-pills{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:12px;}
+.qs-pills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px;}
 .home .qs-pill{display:flex;align-items:center;gap:10px;padding:10px;border-radius:999px;background:rgba(45,22,16,.24);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);text-align:start;min-width:0;}
 .qs-pill .qs-circle{width:56px;height:56px;background:rgba(255,255,255,.86);color:#2b2627;}
 .qs-pill .qs-label{font-size:14.5px;font-weight:700;line-height:1.35;}
@@ -326,3 +326,39 @@ body:has(.home) .badge-warn{background:#ffd48a;color:#4a2c00;}
 @media (max-width:760px){
   body:has(.home) #quickAddBtn{color:#fff!important;}
 }
+
+
+/* ===================== صفحات الإضافات: صفحة كاملة بحجم الصفحات العادية ===================== */
+.overlay.page{--pw:150px;display:block;overflow-y:auto;overscroll-behavior:contain;background:var(--bg);padding:18px 18px 60px;}
+.overlay.page > *{max-width:1440px;margin-inline:auto;}
+.overlay.page .page-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:0;padding:20px 6px 10px;color:var(--ink)!important;}
+.overlay.page .page-bar h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.2px;}
+.overlay.page .top-icon{background:var(--fill)!important;color:var(--ink)!important;}
+.overlay.page .modal{max-width:1440px!important;max-height:none!important;overflow:visible!important;border-radius:26px;box-shadow:none;padding:18px;}
+.overlay.page .modal::before{display:none!important;}
+/* اسم البند وصندوق الإدخال في سطر واحد، وكل الصناديق بعرض واحد */
+.overlay.page .field{flex-direction:row;align-items:center;gap:10px;min-width:0;}
+.overlay.page .field > label{margin:0;flex:1;min-width:0;}
+.overlay.page .field > input,.overlay.page .field > select,.overlay.page .field > textarea{width:var(--pw);flex:none;}
+.overlay.page .field > div{width:var(--pw);flex:none;}
+.overlay.page .field > div input{width:100%;}
+@media (max-width:760px){
+  .overlay.page{padding:6px 12px calc(40px + env(safe-area-inset-bottom));}
+  .overlay.page .page-bar{padding:34px 6px 12px;}
+  .overlay.page .page-bar h1{font-size:24px;}
+  .overlay.page .modal{padding:15px;}
+}
+
+/* ===== الإرشادات مخفية افتراضياً وتظهر بزر 🧠 ===== */
+.tip{display:none!important;}
+body.show-tips .tip{display:block!important;}
+.tips-btn{font-size:21px;line-height:1;}
+body.show-tips .tips-btn{background:var(--acbg)!important;box-shadow:0 0 0 2px var(--ac);}
+.overlay.page .page-bar .brand{display:flex;align-items:center;gap:12px;}
+/* رفع سطر سهم الرجوع واسم الصفحة قليلاً (الصفحات الداخلية فقط) */
+body:not(:has(.home)) .topbar{padding-top:10px;}
+.overlay.page .page-bar{padding-top:10px;}
+@media (max-width:760px){
+  body:not(:has(.home)) .topbar,.overlay.page .page-bar{min-height:0;padding-top:max(18px,calc(env(safe-area-inset-top,0px) + 8px));padding-bottom:8px;}
+}
+body.show-tips span.tip{display:inline!important;}
