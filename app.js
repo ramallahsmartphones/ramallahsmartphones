@@ -1842,25 +1842,33 @@
   }
   function customerCard(c){
     let badge='';
-    if(c.overdue) badge='<span class="badge badge-warn">متأخر</span>';
-    else if(c.paidOff) badge='<span class="badge badge-ok">مسدد بالكامل</span>';
-    else if(c.hasPending) badge='<span class="badge badge-muted">عليه دفعات</span>';
-    { const lim = creditLimitOf(c.name); if(lim > 0 && c.balance > lim) badge += ' <span class="badge badge-bad">تجاوز الحد</span>'; }
+    if(c.overdue) badge='<span class="badge badge-warn badge-strong">متأخر</span>';
+    else if(c.paidOff) badge='<span class="badge badge-ok badge-strong">مسدد بالكامل</span>';
+    else if(c.hasPending) badge='<span class="badge badge-warn badge-strong">عليه دفعات</span>';
+    { const lim = creditLimitOf(c.name); if(lim > 0 && c.balance > lim) badge += ' <span class="badge badge-bad badge-strong">تجاوز الحد</span>'; }
+    const due = Math.max(0, c.balance), amtCls = due > 0.009 ? 'debit' : 'credit';
     return `
-      <div class="customer-card" data-opencustomer="${esc(c.name)}" style="cursor:pointer">
-        <div class="customer-top">
-          <div><div class="customer-name">${esc(c.name)} <span class="muted" style="font-size:11px;font-weight:600">${esc(c.code||'')}</span> ${badge}</div>
-          <div class="customer-phone">${esc(c.phone)||'بدون رقم هاتف'} · ${c.purCount} عملية بيع · ${c.payCount} عملية قبض</div></div>
+      <div class="customer-card cc" data-opencustomer="${esc(c.name)}" style="cursor:pointer">
+        <div class="cc-top">
+          <span class="cc-av">${icon('users')}</span>
+          <div class="cc-id">
+            <div class="customer-name">${esc(c.name)}</div>
+            <div class="cc-sub"><span class="muted">${esc(c.code||'')}</span> ${badge}</div>
+          </div>
+          <div class="cc-amt-box ${amtCls}">
+            <small>المبلغ المتبقي</small>
+            <div class="cc-amt">${money(due)}</div>
+          </div>
         </div>
-        <div class="cstats">
-          <div class="cstat"><b>${money(Math.max(0,c.balance))}</b><small>المبلغ المستحق</small></div>
-          <div class="cstat"><b>${fmtDate(c.lastPurchase)}</b><small>تاريخ آخر عملية بيع</small></div>
-          <div class="cstat"><b>${fmtDate(c.lastPayment)}</b><small>آخر عملية قبض</small></div>
+        <div class="cc-rows">
+          <div class="cc-row"><span class="cc-ic">${icon('cart')}</span><span class="cc-l">أحدث عملية بيع</span><b>${fmtDate(c.lastPurchase)}</b></div>
+          <div class="cc-row"><span class="cc-ic">${icon('receive')}</span><span class="cc-l">أحدث عملية قبض</span><b>${fmtDate(c.lastPayment)}</b></div>
         </div>
       </div>`;
   }
 
-  function openCustomerDetail(name){
+  
+function openCustomerDetail(name){
     let matchFirstEnabled = true;
     const wrap = document.createElement("div");
     wrap.className = "overlay";

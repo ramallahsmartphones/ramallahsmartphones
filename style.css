@@ -368,3 +368,34 @@ body.show-tips span.tip{display:inline!important;}
 body.show-filters .filters-row{display:flex;}
 .btn-filter svg{width:20px;height:20px;vertical-align:middle;}
 .btn-filter.has,body.show-filters .btn-filter{background:var(--ac)!important;color:#fff!important;}
+
+/* ===== بطاقة العميل في كشوف الحسابات (الخيار ج) ===== */
+.cc-top{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.cc-id{min-width:0;flex:1;}
+.cc-sub{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;font-size:12px;font-weight:600;}
+.badge-strong{font-size:13px;font-weight:700;padding:4px 14px;box-shadow:inset 0 0 0 1.5px currentColor;}
+.cc-amt-box{flex:none;text-align:center;}
+.cc-amt-box small{display:block;font-size:12px;color:var(--muted);margin-bottom:3px;font-weight:600;}
+.cc-amt{border:1.5px solid currentColor;border-radius:14px;padding:4px 14px;font-weight:700;font-size:18px;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.cc-rows{border-top:1px solid var(--line);margin-top:12px;padding-top:6px;}
+.cc-row{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:14px;}
+.cc-row span{color:var(--muted);}
+.cc-row b{font-weight:700;}
+
+/* ===== بطاقة كشف الحساب بنمط لوحة One UI ===== */
+html[data-theme="dark"] .customer-card.cc{--cc-bg:#352c2a;--cc-ink:#f3eeec;--cc-mut:#c9c2bf;--cc-ring:rgba(255,255,255,.07);--cc-av:#e3e0df;--cc-avi:#2a2523;--cc-ic:#6b615e;--cc-ici:#efe9e6;--cc-line:rgba(255,255,255,.09);}
+html[data-theme="light"] .customer-card.cc{--cc-bg:#ffffff;--cc-ink:#0d0d0d;--cc-mut:#6b6b6b;--cc-ring:#ececec;--cc-av:#e6e2e0;--cc-avi:#2a2523;--cc-ic:#dcd7d4;--cc-ici:#3a3330;--cc-line:#ececec;}
+.customer-card.cc{background:var(--cc-bg);color:var(--cc-ink);border-radius:34px;box-shadow:inset 0 0 0 1px var(--cc-ring);padding:16px 18px 12px;margin-bottom:12px;}
+.cc-top{display:flex;align-items:center;gap:12px;}
+.cc-av{width:54px;height:54px;flex:none;border-radius:50%;background:var(--cc-av);color:var(--cc-avi);display:flex;align-items:center;justify-content:center;}
+.cc-av svg{width:26px;height:26px;}
+.cc-id{min-width:0;flex:1;}
+.cc .customer-name{font-weight:700;font-size:16.5px;color:var(--cc-ink);}
+.cc .cc-sub .muted{color:var(--cc-mut);}
+.cc .cc-amt-box small{color:var(--cc-mut);}
+.cc-rows{border-top:1px solid var(--cc-line);margin-top:14px;padding-top:8px;}
+.cc-row{display:flex;align-items:center;gap:12px;padding:6px 0;font-size:14px;}
+.cc-ic{width:40px;height:40px;flex:none;border-radius:50%;background:var(--cc-ic);color:var(--cc-ici);display:flex;align-items:center;justify-content:center;}
+.cc-ic svg{width:20px;height:20px;}
+.cc-row .cc-l{flex:1;color:var(--cc-mut);}
+.cc-row b{font-weight:700;color:var(--cc-ink);}
