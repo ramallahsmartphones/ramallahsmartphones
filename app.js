@@ -1841,19 +1841,20 @@
     `;
   }
   function customerCard(c){
-    let badge='';
-    if(c.overdue) badge='<span class="badge badge-warn badge-strong">متأخر</span>';
-    else if(c.paidOff) badge='<span class="badge badge-ok badge-strong">مسدد بالكامل</span>';
-    else if(c.hasPending) badge='<span class="badge badge-warn badge-strong">عليه دفعات</span>';
-    { const lim = creditLimitOf(c.name); if(lim > 0 && c.balance > lim) badge += ' <span class="badge badge-bad badge-strong">تجاوز الحد</span>'; }
+    // حالة العميل تظهر داخل الدائرة، وبدون حالة تبقى الأيقونة
+    let st = '', stText = icon('users');
+    if(c.overdue){ st = 'st-bad'; stText = '<span>متأخر</span>'; }
+    else if(c.paidOff){ st = 'st-ok'; stText = '<span>مسدد<br>بالكامل</span>'; }
+    else if(c.hasPending){ st = 'st-warn'; stText = '<span>عليه<br>دفعات</span>'; }
+    const lim = creditLimitOf(c.name);
+    const overLimit = lim > 0 && c.balance > lim ? '<div class="cc-sub"><span class="badge badge-bad badge-strong">تجاوز الحد</span></div>' : '';
     const due = Math.max(0, c.balance), amtCls = due > 0.009 ? 'debit' : 'credit';
     return `
       <div class="customer-card cc" data-opencustomer="${esc(c.name)}" style="cursor:pointer">
         <div class="cc-top">
-          <span class="cc-av">${icon('users')}</span>
           <div class="cc-id">
             <div class="customer-name">${esc(c.name)}</div>
-            <div class="cc-sub"><span class="muted">${esc(c.code||'')}</span> ${badge}</div>
+            ${overLimit}
           </div>
           <div class="cc-amt-box ${amtCls}">
             <small>المبلغ المتبقي</small>
@@ -1861,8 +1862,11 @@
           </div>
         </div>
         <div class="cc-rows">
-          <div class="cc-row"><span class="cc-ic">${icon('cart')}</span><span class="cc-l">أحدث عملية بيع</span><b>${fmtDate(c.lastPurchase)}</b></div>
-          <div class="cc-row"><span class="cc-ic">${icon('receive')}</span><span class="cc-l">أحدث عملية قبض</span><b>${fmtDate(c.lastPayment)}</b></div>
+          <span class="cc-av ${st}">${stText}</span>
+          <div class="cc-list">
+            <div class="cc-row"><span class="cc-ic">${icon('cart')}</span><span class="cc-l">أحدث عملية بيع</span><b>${fmtDate(c.lastPurchase)}</b></div>
+            <div class="cc-row"><span class="cc-ic">${icon('receive')}</span><span class="cc-l">أحدث عملية قبض</span><b>${fmtDate(c.lastPayment)}</b></div>
+          </div>
         </div>
       </div>`;
   }
