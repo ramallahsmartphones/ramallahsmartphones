@@ -362,3 +362,9 @@ body:not(:has(.home)) .topbar{padding-top:10px;}
   body:not(:has(.home)) .topbar,.overlay.page .page-bar{min-height:0;padding-top:max(18px,calc(env(safe-area-inset-top,0px) + 8px));padding-bottom:8px;}
 }
 body.show-tips span.tip{display:inline!important;}
+
+/* ===== الفلاتر مخفية افتراضياً وتظهر بزر القمع ===== */
+.filters-row{display:none;}
+body.show-filters .filters-row{display:flex;}
+.btn-filter svg{width:20px;height:20px;vertical-align:middle;}
+.btn-filter.has,body.show-filters .btn-filter{background:var(--ac)!important;color:#fff!important;}

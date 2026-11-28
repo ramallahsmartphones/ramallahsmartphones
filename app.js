@@ -1218,7 +1218,7 @@
     return `
       <div class="card">
         <div class="card-head">
-          <h2>المبيعات</h2>
+          ${filterBtn(!!(purchasesFilter.customer||purchasesFilter.month||purchasesFilter.year))}
           <div class="row">
             <button class="btn btn-ghost btn-sort-sm" id="sortBtn">${sortDesc?'الأحدث أولاً ▾':'الأقدم أولاً ▴'}</button>
           </div>
@@ -1486,7 +1486,7 @@
     return `
       <div class="card">
         <div class="card-head">
-          <h2>المقبوضات</h2>
+          ${filterBtn(!!(paymentsFilter.customer||paymentsFilter.month||paymentsFilter.year))}
           <div class="row">
             <button class="btn btn-ghost btn-sort-sm" id="sortBtn">${sortDesc?'الأحدث أولاً ▾':'الأقدم أولاً ▴'}</button>
           </div>
@@ -1653,7 +1653,7 @@
         </table></div>`;
     return `
       <div class="card">
-        <div class="card-head"><h2>إحصائيات عامة</h2></div>
+        <div class="card-head">${filterBtn(!!(statsFilter.month||statsFilter.year))}</div>
         ${monthYearFilterRow('gst', statsFilter, [], years, false)}
         <div class="cstats">
           <div class="cstat"><b>${money(totalSales)}</b><small>إجمالي المبيعات</small></div>
@@ -1696,7 +1696,7 @@
     return `
       <div class="card">
         <div class="card-head">
-          <h2>قائمة دخل</h2>
+          ${filterBtn(!!(incomeFilter.customer||incomeFilter.month||incomeFilter.year))}
           <div class="row">
             <button class="btn btn-ghost btn-sm" id="lockIncomeListBtn">قفل الشاشة</button>
           </div>
@@ -1798,7 +1798,7 @@
     return `
       <div class="card">
         <div class="card-head">
-          <h2>كشوف حسابات العملاء</h2>
+          ${filterBtn(!!(statementsFilter.customer||statementsFilter.month||statementsFilter.year||statementsFilter.top||statementsFilter.min||statFilter!=='all'))}
           <div class="row">
             <button class="icon-btn" id="shareStatementsBtn" title="مشاركة">🔗 مشاركة</button>
           </div>
@@ -2055,7 +2055,7 @@
     const customerNames = allCustomerNames();
     return `
       <div class="card">
-        <div class="card-head"><h2>أرشيف التعديلات</h2></div>
+        <div class="card-head">${filterBtn(!!(historyFilter.customer||historyFilter.month||historyFilter.year))}</div>
         <p class="hint tip">سجل كامل لكل إضافة أو تعديل أو حذف على العملاء والمبيعات والمقبوضات، مع بيان القيمة قبل التعديل وبعده.</p>
         ${monthYearFilterRow('hist', historyFilter, customerNames, years, true)}
         <p class="hint">${pgInfo.total} حركة ضمن هذه الفلترة</p>
@@ -2437,7 +2437,8 @@
     gear:'<circle cx="12" cy="12" r="3"/><path d="M10.300 3h3.4l.5 2.4 1.5.9 2.3-.8 1.700 2.9-1.8 1.700v1.8l1.800 1.700-1.7 2.9-2.3-.8-1.5.9-.5 2.4h-3.4l-.5-2.4-1.500-.9-2.3.8-1.700-2.9 1.8-1.700v-1.8L4.300 8.400 6 5.500l2.3.8 1.5-.9z"/>',
     backup:'<path d="M7 18.500h10.500a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.400 9.600 4.500 4.500 0 0 0 7 18.500z"/><path d="M12 10.500V16M9.500 13.500 12 16l2.500-2.500"/>',
     trash:'<path d="M4.500 7h15M9.500 7V4.500h5V7M6.500 7l1 13.500h9l1-13.500M10 11v6M14 11v6"/>',
-    back:'<path d="M9 5l7 7-7 7"/>'
+    back:'<path d="M9 5l7 7-7 7"/>',
+    filter:'<path d="M3.500 4.500h17l-6.500 8v6l-4 2v-8z"/>'
   };
   const icon = (n) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICONS[n] + '</svg>';
   // page = تفتح صفحة (tab + sub) ، run = تنفّذ عملية مباشرة ، staff = تظهر في وضع الموظف
@@ -2504,6 +2505,8 @@
   }
   const TIPS_BTN = '<button type="button" class="top-icon tips-btn" data-tips aria-label="الإرشادات" title="الإرشادات">🧠</button>';
   document.addEventListener('click', (e)=>{ if(e.target.closest && e.target.closest('[data-tips]')) document.body.classList.toggle('show-tips'); });
+  const filterBtn = (active) => '<button type="button" class="btn btn-ghost btn-sort-sm btn-filter' + (active ? ' has' : '') + '" data-filters aria-label="الفلترة" title="الفلترة">' + icon('filter') + '</button>';
+  document.addEventListener('click', (e)=>{ if(e.target.closest && e.target.closest('[data-filters]')) document.body.classList.toggle('show-filters'); });
   function topbarHtml(){
     const staff = isStaff() ? '<span class="badge badge-warn" id="exitStaffBtn" style="cursor:pointer">وضع الموظف — اضغط للخروج</span>' : '';
     if(currentTab === 'home'){
